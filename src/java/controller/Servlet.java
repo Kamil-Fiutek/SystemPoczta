@@ -6,6 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import model.Employee;
 
 /**
  * Główny servlet systemu. Odpowiada za połączenie z bazą danych i udostępnienie
@@ -15,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
  * @version 1.0
  */
 public class Servlet extends HttpServlet {
+    
+    model.ApplicationInterface[] apps = {null};
 
     /**
      * Tworzy połączenie z bazą danych. Jeśli napotkano wyjatek
@@ -34,6 +38,7 @@ public class Servlet extends HttpServlet {
         } catch (SQLException e) {
             throw new ServletException(e.getMessage());
         }
+        
     }
 
     /**
@@ -60,6 +65,37 @@ public class Servlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        // Identyfikacja użytkownika:
+
+        HttpSession httpSession = request.getSession();
+        
+        Integer id = (Integer) httpSession.getAttribute("id");
+        if (id == null) {
+            id = new Integer(0);
+            httpSession.setAttribute("id", id);
+        }
+        model.Employee employee = new Employee(id);
+
+        // Wybór aplikacji:
+
+        Integer wI = (Integer) httpSession.getAttribute("app");
+        if (wI == null) {
+            wI = new Integer(0);// Default application!
+            httpSession.setAttribute("app", wI);
+        }
+        
+        try {
+            wI = Integer.parseInt(request.getParameter("app")); // Jeśli się uda to nadpisuje. Jesto ok.
+        } catch (NumberFormatException e) {
+        } catch (NullPointerException e) {
+        }
+        if (wI < 0 || wI >= apps.length || apps[wI] == null) {
+            wI = 0; // Default application - musi być prawidłowy
+        }
+
+        // Generowanie odpowiedzi:
+
         response.setContentType("text/html;charset=UTF-8");
         
         view.XMLGenerator xmlGenerator = new view.XMLGenerator(response.getWriter());
@@ -68,6 +104,7 @@ public class Servlet extends HttpServlet {
         htmlGenerator.printHTMLBegin("System Poczta");
 
         // Ciało strony:
+
         xmlGenerator.printStartTag("div", "id", "mainDiv");
         xmlGenerator.printStartTag("div", "id", "header");
         xmlGenerator.printEmptyElement("img", "alt", "banner", "src", "banner.png");
@@ -75,12 +112,34 @@ public class Servlet extends HttpServlet {
         xmlGenerator.printStartTag("div", "id", "leftDiv");// div leftDiv
         htmlGenerator.printHTMLHeader(4, "Aplikacje:");
 
+
+
+
         // Lista aplikacji:
-        
+        xmlGenerator.printStartTag("ul");
+        for (int i = 0; i < apps.length; ++i) {
+            if (apps[i] != null && apps[i].getTitle(employee) != null) {
+                if (i == wI) {
+                    xmlGenerator.printStartTag("b");
+                }
+                xmlGenerator.printStartTag("il");
+                xmlGenerator.printElement("a", apps[i].getTitle(employee), "href","?app="+i);
+                xmlGenerator.printEndTag();
+                if (i == wI) {
+                    xmlGenerator.printEndTag();
+                }
+            }
+        }
+        xmlGenerator.printEndTag();// ul
+
         xmlGenerator.printEndTag();// leftDiv
         xmlGenerator.printStartTag("div", "id", "centerDiv");// div centerDiv
-        
-        xmlGenerator.println("Zawartość główna. Aplikacja.");
+
+        if (employee.getRight(wI)) {
+            apps[wI.intValue()].printApplication(employee, xmlGenerator, request.getParameterMap(), httpSession);
+        } else {
+            xmlGenerator.println("Brak uprawnień do wykonania tej aplikacji!");
+        }
         
         xmlGenerator.printEndTag();// centerDiv
         xmlGenerator.printElement("div", "", "style", "clear:both;");
