@@ -11,7 +11,7 @@ public interface ApplicationInterface {
     /**
      * Zwraca tytuł aplikacji. Najpierw konieczne jest sprawdenie uprawnień.
      *
-     * @return
+     * @return Zwraca tytuł aplikacji wyświetlany na pasku aplikacji.
      */
     public String getTitle();
 
