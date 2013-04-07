@@ -18,7 +18,9 @@ import model.Employee;
  */
 public class Servlet extends HttpServlet {
     
-    model.ApplicationInterface[] apps = {null};
+    model.ApplicationInterface[] apps = {
+        new model.applications.logowanie(),
+        new model.applications.stanPrzesylki()};
 
     /**
      * Tworzy połączenie z bazą danych. Jeśli napotkano wyjatek
@@ -122,7 +124,7 @@ public class Servlet extends HttpServlet {
                 if (i == wI) {
                     xmlGenerator.printStartTag("b");
                 }
-                xmlGenerator.printStartTag("il");
+                xmlGenerator.printStartTag("ul");
                 xmlGenerator.printElement("a", apps[i].getTitle(employee), "href","?app="+i);
                 xmlGenerator.printEndTag();
                 if (i == wI) {
@@ -145,7 +147,7 @@ public class Servlet extends HttpServlet {
         xmlGenerator.printElement("div", "", "style", "clear:both;");
         xmlGenerator.printStartTag("div", "id", "footer");
         xmlGenerator.printStartTag("center");
-        xmlGenerator.println("2013");
+        xmlGenerator.println("Strona wyprodukowana w roku 2013");
         xmlGenerator.printEndTag();// center
         xmlGenerator.printEndTag();// div footer
         xmlGenerator.printEndTag();// mainDiv

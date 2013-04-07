@@ -15,6 +15,7 @@ public class Employee {
     private int idPracownika;
     private String fullName;
     private boolean[] rights;
+    private static final int freeApplication = 2;
 
     public Employee(int idPracownika) {
 
@@ -27,9 +28,12 @@ public class Employee {
                 if (resultSet.next()) {
                     fullName = resultSet.getString("imie") + " " + resultSet.getString("nazwisko");
                     String stringRights = resultSet.getString("uprawnienia");
-                    rights = new boolean[stringRights.length()];
+                    rights = new boolean[stringRights.length() + freeApplication];
+                    for (int i = 0; i < freeApplication; i++) {
+                        rights[i] = true;
+                    }
                     for (int i = 0; i < stringRights.length(); ++i) {
-                        rights[i] = stringRights.charAt(i) != '0';
+                        rights[i + freeApplication] = stringRights.charAt(i) != '0';
                     }
                 }
 
@@ -40,6 +44,12 @@ public class Employee {
             }
         } else {
             this.idPracownika = 0;
+        }
+        if (this.idPracownika == 0) {
+            rights = new boolean[freeApplication];
+            for (int i = 0; i < freeApplication; i++) {
+                rights[i] = true;
+            }
         }
     }
 
@@ -56,10 +66,10 @@ public class Employee {
     }
 
     public boolean isEmployee() {
-        return idPracownika!=0;
+        return idPracownika != 0;
     }
-    
-    public int getId(){
+
+    public int getId() {
         return idPracownika;
     }
 }
