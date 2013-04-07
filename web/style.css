@@ -1,0 +1,39 @@
+/* 
+    Document   : style
+    Created on : Apr 6, 2013, 9:20:57 PM
+    Author     : Adrian Scheit
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+body{
+    font-size: 12px;
+}
+
+div{
+    width: 100%;
+}
+#mainDiv{
+    width: 1000px;
+    margin: auto;
+    top: 0px;
+}
+#leftDiv{
+    float: left;
+    clear: none;
+    width: 170px;
+    margin: 10px;
+    border: 0px;
+    background-color: rgb(237,221,250);
+    border-radius: 5px;
+    padding: 5px;
+}
+#centerDiv{
+    float: left;
+    clear: none;
+    width: 776px;
+    margin: 10px;
+    border: 2px aqua solid;
+    border-radius: 5px;
+}
+
