@@ -1,9 +1,11 @@
 package model;
 
+import com.mysql.jdbc.MySQLConnection;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import javax.servlet.ServletConfig;
+import org.gjt.mm.mysql.Driver;
 
 /**
  * Klasa implementująca kreacyjny i obiektowy wzorzec projektrowy singleton. ,
@@ -19,7 +21,12 @@ import javax.servlet.ServletConfig;
  */
 public class ConnectionSingleton {
 
-    private static String driverName = "org.apache.derby.jdbc.ClientDriver";
+    /**
+     * Nazwa sterownika do połączenia się z bazą danych. Dla derby:
+     * org.apache.derby.jdbc.ClientDriver
+     */
+    private static String driverName = "com.mysql.jdbc.Driver";
+    
     /**
      * Prywatna statyczna referencja na jedyną instancję klasy
      * <code>java.sql.Connection</code>
@@ -80,6 +87,7 @@ public class ConnectionSingleton {
                         servletConfig.getInitParameter("user"),
                         servletConfig.getInitParameter("password"));
             }
+            
         }
 
         return connection;

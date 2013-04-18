@@ -1,6 +1,7 @@
 package model.applications;
 
 import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import model.Employee;
 import view.XMLGenerator;
@@ -17,7 +18,7 @@ public class stanPrzesylki implements model.ApplicationInterface {
     }
     
     @Override
-    public void printApplication(Employee employee, XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession) {
+    public void printApplication(Employee employee, HttpServletResponse httpServletResponse, XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession) {
         xmlGenerator.println("Narazie to jest cegłą.");
     }
 }

@@ -5,15 +5,15 @@
         <servlet-class>controller.Servlet</servlet-class>
         <init-param>
             <param-name>url</param-name>
-            <param-value>jdbc:derby://localhost/poczta</param-value>
+            <param-value>jdbc:mysql://localhost/poczta</param-value>
         </init-param>
         <init-param>
             <param-name>user</param-name>
-            <param-value>poczta</param-value>
+            <param-value>root</param-value>
         </init-param>
         <init-param>
             <param-name>password</param-name>
-            <param-value>poczta</param-value>
+            <param-value>root</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

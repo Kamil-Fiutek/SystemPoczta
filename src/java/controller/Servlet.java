@@ -70,7 +70,7 @@ public class Servlet extends HttpServlet {
 
         // Identyfikacja użytkownika:
 
-        HttpSession httpSession = request.getSession();
+        HttpSession httpSession = request.getSession(); 
         
         Integer id = (Integer) httpSession.getAttribute("id");
         if (id == null) {
@@ -138,7 +138,7 @@ public class Servlet extends HttpServlet {
         xmlGenerator.printStartTag("div", "id", "centerDiv");// div centerDiv
 
         if (employee.getRight(wI)) {
-            apps[wI.intValue()].printApplication(employee, xmlGenerator, request.getParameterMap(), httpSession);
+            apps[wI.intValue()].printApplication(employee, response, xmlGenerator, request.getParameterMap(), httpSession);
         } else {
             xmlGenerator.println("Brak uprawnień do wykonania tej aplikacji!");
         }

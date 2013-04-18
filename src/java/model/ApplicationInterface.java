@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -23,9 +24,12 @@ public interface ApplicationInterface {
      * Prosi o wydrukowanie aplikacji.
      *
      * @param employee Pracownik który chce to wykonać.
+     * @param par4 the value of par4
      * @param xmlGenerator "papier" do drukowania.
      * @param parameterMap Parametry przekazane od pracownika/użytkownika.
      * @param httpSession Sesja użytkownika.
      */
-    public void printApplication(Employee employee, view.XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession);
+    
+    
+    public void printApplication(Employee employee, HttpServletResponse httpServletResponse, view.XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession);
 }
