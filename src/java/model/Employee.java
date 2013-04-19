@@ -15,7 +15,7 @@ public class Employee {
     private int idPracownika;
     private String fullName;
     private boolean[] rights;
-    private static final int freeApplication = 2;
+    private static final int freeApplication = 3;
 
     public Employee(int idPracownika) {
 
