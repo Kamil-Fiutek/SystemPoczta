@@ -20,7 +20,8 @@ public class Servlet extends HttpServlet {
     
     model.ApplicationInterface[] apps = {
         new model.applications.logowanie(),
-        new model.applications.stanPrzesylki()};
+        new model.applications.stanPrzesylki(),
+        new model.applications.DefiniowaniePrzesylek()};
 
     /**
      * Tworzy połączenie z bazą danych. Jeśli napotkano wyjatek
