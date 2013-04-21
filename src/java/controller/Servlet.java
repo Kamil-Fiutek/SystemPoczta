@@ -17,7 +17,7 @@ import model.Employee;
  * @version 1.0
  */
 public class Servlet extends HttpServlet {
-    
+
     model.ApplicationInterface[] apps = {
         new model.applications.logowanie(),
         new model.applications.stanPrzesylki(),
@@ -41,7 +41,7 @@ public class Servlet extends HttpServlet {
         } catch (SQLException e) {
             throw new ServletException(e.getMessage());
         }
-        
+
     }
 
     /**
@@ -71,8 +71,8 @@ public class Servlet extends HttpServlet {
 
         // Identyfikacja użytkownika:
 
-        HttpSession httpSession = request.getSession(); 
-        
+        HttpSession httpSession = request.getSession();
+
         Integer id = (Integer) httpSession.getAttribute("id");
         if (id == null) {
             id = new Integer(0);
@@ -82,28 +82,56 @@ public class Servlet extends HttpServlet {
 
         // Wybór aplikacji:
 
-        Integer wI = (Integer) httpSession.getAttribute("app");
+        Integer wI = null;
+        /*
+         wI = (Integer) httpSession.getAttribute("app");
+         if (wI == null) {
+         wI = new Integer(0);// Default application!
+         httpSession.setAttribute("app", wI);
+         }
+
+         try {
+         wI = Integer.parseInt(request.getParameter("app")); // Jeśli się uda to nadpisuje. Jesto ok.
+         } catch (NumberFormatException e) {
+         } catch (NullPointerException e) {
+         }
+         if (wI < 0 || wI >= apps.length || apps[wI] == null) {
+         wI = 0; // Default application - musi być prawidłowy
+         }
+         */
+
+
+
+        String nazwa = request.getRequestURI();
+
+        if (nazwa != null) {
+            int ostatniSlash=0;
+            for(int i=0;i<nazwa.length();++i){
+                if(nazwa.charAt(i)=='/'){
+                    ostatniSlash=i;
+                }
+            }
+            nazwa=nazwa.substring(ostatniSlash+1);
+
+            try {
+                wI = new Integer(Integer.parseInt(nazwa));
+            } catch (NumberFormatException e) {
+            }
+        }
+
+
+
         if (wI == null) {
-            wI = new Integer(0);// Default application!
-            httpSession.setAttribute("app", wI);
-        }
-        
-        try {
-            wI = Integer.parseInt(request.getParameter("app")); // Jeśli się uda to nadpisuje. Jesto ok.
-        } catch (NumberFormatException e) {
-        } catch (NullPointerException e) {
-        }
-        if (wI < 0 || wI >= apps.length || apps[wI] == null) {
-            wI = 0; // Default application - musi być prawidłowy
+            wI = new Integer(0);
         }
 
         // Generowanie odpowiedzi:
 
         response.setContentType("text/html;charset=UTF-8");
-        
+
         view.XMLGenerator xmlGenerator = new view.XMLGenerator(response.getWriter());
         view.HTMLGenerator htmlGenerator = new view.HTMLGenerator(xmlGenerator);
-        
+
         htmlGenerator.printHTMLBegin("System Poczta");
 
         // Ciało strony:
@@ -126,7 +154,7 @@ public class Servlet extends HttpServlet {
                     xmlGenerator.printStartTag("b");
                 }
                 xmlGenerator.printStartTag("ul");
-                xmlGenerator.printElement("a", apps[i].getTitle(employee), "href","?app="+i);
+                xmlGenerator.printElement("a", apps[i].getTitle(employee), "href", "" + i);
                 xmlGenerator.printEndTag();
                 if (i == wI) {
                     xmlGenerator.printEndTag();
@@ -143,7 +171,7 @@ public class Servlet extends HttpServlet {
         } else {
             xmlGenerator.println("Brak uprawnień do wykonania tej aplikacji!");
         }
-        
+
         xmlGenerator.printEndTag();// centerDiv
         xmlGenerator.printElement("div", "", "style", "clear:both;");
         xmlGenerator.printStartTag("div", "id", "footer");
