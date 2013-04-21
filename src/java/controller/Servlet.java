@@ -138,7 +138,7 @@ public class Servlet extends HttpServlet {
 
         xmlGenerator.printStartTag("div", "id", "mainDiv");
         xmlGenerator.printStartTag("div", "id", "header");
-        xmlGenerator.printEmptyElement("img", "alt", "banner", "src", "banner.png");
+        xmlGenerator.printEmptyElement("img", "alt", "banner", "src", "../banner.png");
         xmlGenerator.printEndTag();// div header
         xmlGenerator.printStartTag("div", "id", "leftDiv");// div leftDiv
         htmlGenerator.printHTMLHeader(4, "Aplikacje:");

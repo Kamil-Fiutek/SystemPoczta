@@ -67,7 +67,7 @@ public class HTMLGenerator {
         xmlGenerator.printEmptyElement("link",
                 "rel", "stylesheet",
                 "type", "text/css",
-                "href", "style.css");
+                "href", "../style.css");
         xmlGenerator.printElement("title", title);
 
         xmlGenerator.printEndTag();// head

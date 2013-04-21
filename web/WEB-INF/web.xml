@@ -18,7 +18,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Servlet</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/servlet/*</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
