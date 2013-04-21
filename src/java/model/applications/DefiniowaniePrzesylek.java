@@ -24,6 +24,25 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
     @Override
     public void printApplication(Employee employee, HttpServletResponse httpServletResponse, XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession) {
         xmlGenerator.printElement("p", "Cegła", "nazwa","wartosc");
+        
+        xmlGenerator.println(parameterMap.keySet().toString());
+        
+        xmlGenerator.printStartTag("form", "actoin","","method","POST");
+        
+        xmlGenerator.println("Kod pocztowy nadawcy:");
+        xmlGenerator.printEmptyElement("input", "neme","kodpocztowy","type","text");
+        xmlGenerator.printEmptyElement("br");
+        
+        xmlGenerator.println("Kod pocztowy odbiorcy:");
+        xmlGenerator.printEmptyElement("input", "neme","kododbiorcy","type","text");
+        xmlGenerator.printEmptyElement("br");
+        
+        
+        xmlGenerator.printEmptyElement("input", "neme","submit","type","submit","value","Dalej >");
+        xmlGenerator.printEmptyElement("br");
+        
+        xmlGenerator.printEndTag(); // form
+        
     }
     
 }
