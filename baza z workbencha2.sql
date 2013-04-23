@@ -186,6 +186,36 @@ DEFAULT CHARACTER SET = latin2
 COMMENT = 'W relacji jeden do jeden z przsyłkami';
 
 
+
+CREATE TABLE typyPrzesylek
+(
+         idTypu int(10) unsigned NOT NULL AUTO_INCREMENT,
+         typ varchar(80) DEFAULT NULL,
+         PRIMARY KEY (idTypu)
+) ENGINE=MyISAM;
+ 
+INSERT INTO typyPrzesylek VALUES
+(
+          NULL, "List"
+);
+ 
+ 
+INSERT INTO typyPrzesylek VALUES
+(
+          NULL, "Paczka"
+);
+ 
+ 
+INSERT INTO typyPrzesylek VALUES
+(
+          NULL, "Przekaz"
+);
+
+
+
+
+
+
 --
 -- Zrzut danych tabeli `gabaryty`
 --
@@ -251,3 +281,6 @@ USE `poczta` ;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+
