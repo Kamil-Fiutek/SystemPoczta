@@ -68,6 +68,11 @@ public class HTMLGenerator {
                 "rel", "stylesheet",
                 "type", "text/css",
                 "href", "../style.css");
+        xmlGenerator.printStartTag("script",
+                "type", "text/javascript",
+                "src", "../js/jquery-2.0.0.min.js");
+        xmlGenerator.printEndTag();
+        
         xmlGenerator.printElement("title", title);
 
         xmlGenerator.printEndTag();// head
