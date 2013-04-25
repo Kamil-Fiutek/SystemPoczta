@@ -36,8 +36,13 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
     @Override
     public void printApplication(Employee employee, HttpServletResponse httpServletResponse, XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession) {      
         
-        xmlGenerator.printStartTag("form", "actoin","","method","POST");
+        xmlGenerator.printStartTag("script",
+                "type", "text/javascript",
+                "src", "../js/pages/formularz.js");
+        xmlGenerator.printEndTag();
+        xmlGenerator.printStartTag("form", "action","","method","POST");
         
+        xmlGenerator.printStartTag("div", "class","tab tabActive");
         xmlGenerator.println("Kod pocztowy nadawcy:");
         xmlGenerator.printEmptyElement("input", "name","kod_nadawcy","type","text");
         xmlGenerator.printEmptyElement("br");
@@ -58,13 +63,11 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         getDataFromDB("select idTypu, typ from typyPrzesylek");
         printResultSetContent(xmlGenerator, "typ_przesylki");
         
-        xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Dalej >");
+        xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Dalej >", "class", "tabEvaluator");
         xmlGenerator.printEmptyElement("br");
+        xmlGenerator.printEndTag();
         
-        xmlGenerator.printEmptyElement("br");
-        xmlGenerator.println("Testowe formularze");
-        xmlGenerator.printEmptyElement("br");
-        xmlGenerator.printEmptyElement("br");
+        xmlGenerator.printStartTag("div", "class","tab tabList");
         xmlGenerator.println("List priorytetowy:");
         xmlGenerator.printStartTag("select", "name", "list_priorytet");
 	xmlGenerator.printStartTag("option", "value", "Tak");
@@ -80,9 +83,9 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
 	xmlGenerator.printEmptyElement("br");
 	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij list");
         xmlGenerator.printEmptyElement("br");
-        
-        xmlGenerator.printEmptyElement("br");
-        xmlGenerator.printEmptyElement("br");
+        xmlGenerator.printEndTag(); // div class="tab tabList"
+
+        xmlGenerator.printStartTag("div", "class","tab tabPaczka");
         xmlGenerator.println("Paczka priorytetowa:");
         xmlGenerator.printStartTag("select", "name", "paczka_priorytet");
 	xmlGenerator.printStartTag("option", "value", "Tak");
@@ -106,18 +109,19 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
 	xmlGenerator.println("Masa paczki:");
         xmlGenerator.printEmptyElement("input", "name", "masa_listu", "type", "text");
 	xmlGenerator.printEmptyElement("br");
-	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij list");
+	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij paczkę");
         xmlGenerator.printEmptyElement("br");
-        
-        xmlGenerator.printEmptyElement("br");
-        xmlGenerator.printEmptyElement("br");
+        xmlGenerator.printEndTag();     //div class="tab tabPaczka"
+
+        xmlGenerator.printStartTag("div", "class","tab tabPrzekaz");
         xmlGenerator.println("Kwota przekazu:");
         xmlGenerator.printEmptyElement("input", "name", "masa_listu", "type", "text");
 	xmlGenerator.printEmptyElement("br");
 	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij przekaz");
         xmlGenerator.printEmptyElement("br");
+        xmlGenerator.printEndTag();     //div class="tab tabPrzekaz"
         
-        xmlGenerator.printEndTag(); // form
+        xmlGenerator.printEndTag();     // form
     }
 
     /**
