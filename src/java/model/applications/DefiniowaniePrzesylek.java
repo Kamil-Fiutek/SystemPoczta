@@ -42,7 +42,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printEndTag();
         xmlGenerator.printStartTag("form", "action","","method","POST");
         
-        xmlGenerator.printStartTag("div", "class","tab tabActive");
+        xmlGenerator.printStartTag("div", "class", /*"tab tabActive"*/ "");
         xmlGenerator.println("Kod pocztowy nadawcy:");
         xmlGenerator.printEmptyElement("input", "name","kod_nadawcy","type","text");
         xmlGenerator.printEmptyElement("br");
@@ -63,7 +63,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         getDataFromDB("select idTypu, typ from typyPrzesylek");
         printResultSetContent(xmlGenerator, "typ_przesylki");
         
-        xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Dalej >", "class", "tabEvaluator");
+        xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Dalej >>", "class", "tabEvaluator");
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEndTag();
         
@@ -97,15 +97,9 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.println("Gabaryt paczki:");
-        xmlGenerator.printStartTag("select", "name", "paczka_gabaryt");
-	xmlGenerator.printStartTag("option", "value", "");
-        xmlGenerator.println("Do pobrania z BD");
-        xmlGenerator.printEndTag();
-        xmlGenerator.printStartTag("option", "value", "");
-        xmlGenerator.println("Do pobrania z BD");   // wywołać getDataFromDB a potem wyswietlic resultset
-        xmlGenerator.printEndTag();
-        xmlGenerator.printEndTag();
-        xmlGenerator.printEmptyElement("br");
+        getDataFromDB("select idGabarytu, opisGabarytu from gabaryty");
+        printResultSetContent(xmlGenerator, "paczka_gabaryt");
+
 	xmlGenerator.println("Masa paczki:");
         xmlGenerator.printEmptyElement("input", "name", "masa_listu", "type", "text");
 	xmlGenerator.printEmptyElement("br");
