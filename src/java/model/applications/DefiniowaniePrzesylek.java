@@ -43,32 +43,74 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printStartTag("form", "action","","method","POST");
         
         xmlGenerator.printStartTag("div", "class", /*"tab tabActive"*/ "");
+        
+        xmlGenerator.printStartTag("label", "id", "nadawca_imie_nazwisko");
+        xmlGenerator.println("Imię i nazwisko nadawcy (np. Jan Kowalski):");
+        xmlGenerator.printEndTag();
+        xmlGenerator.printEmptyElement("input", "name","imie_nazwisko_nadawcy","type","text");
+        xmlGenerator.printEmptyElement("br");
+        
+        xmlGenerator.printStartTag("label", "id", "nadawca_adres");
+        xmlGenerator.println("Adres nadawcy - ulica oraz miasto (np. ul. Śliska 5a Szczecin):");
+        xmlGenerator.printEndTag();
+        xmlGenerator.printEmptyElement("input", "name","adres_nadawcy","type","text");
+        xmlGenerator.printEmptyElement("br");
+        
+        xmlGenerator.printStartTag("label", "id", "nadawca_kod_pocztowy");
         xmlGenerator.println("Kod pocztowy nadawcy:");
-        xmlGenerator.printEmptyElement("input", "name","kod_nadawcy","type","text");
+        xmlGenerator.printEndTag();
+        xmlGenerator.printEmptyElement("input", "name","kod_pocztowy_nadawcy","type","text");
         xmlGenerator.printEmptyElement("br");
         
+        xmlGenerator.printStartTag("label", "id", "nadawca_nazwa_kraju");
+        xmlGenerator.println( "Nazwa kraju nadawcy:");
+        xmlGenerator.printEndTag();
+        getDataFromDB("select idKraju, kraj from kraje");
+        printResultSetContent(xmlGenerator, "nazwa_kraju_nadawcy");
+        xmlGenerator.printEmptyElement("br");
+        xmlGenerator.printEmptyElement("br");
+        
+        xmlGenerator.printStartTag("label", "id", "odbiorca_imie_nazwisko");
+        xmlGenerator.println("Imię i nazwisko odbiorcy (np. Jan Kowalski):");
+        xmlGenerator.printEndTag();
+        xmlGenerator.printEmptyElement("input", "name","imie_nazwisko_odbiorcy","type","text");
+        xmlGenerator.printEmptyElement("br");
+        
+        xmlGenerator.printStartTag("label", "id", "odbiorca_adres");
+        xmlGenerator.println("Adres odbiorcy - ulica oraz miasto (np. ul. Śliska 5a Szczecin):");
+        xmlGenerator.printEndTag();
+        xmlGenerator.printEmptyElement("input", "name","adres_odbiorcy","type","text");
+        xmlGenerator.printEmptyElement("br");
+        
+        xmlGenerator.printStartTag("label", "id", "odbiorca_kod_pocztowy");
         xmlGenerator.println("Kod pocztowy odbiorcy:");
-        xmlGenerator.printEmptyElement("input", "name","kod_odbiorcy","type","text");
+        xmlGenerator.printEndTag();
+        xmlGenerator.printEmptyElement("input", "name","kod_pocztowy_odbiorcy","type","text");
         xmlGenerator.printEmptyElement("br");
         
-        xmlGenerator.println("Nazwa kraju nadawcy:");
-        getDataFromDB("select idKraju, kraj from kraje");
-        printResultSetContent(xmlGenerator, "kraj_nadawcy");
-        
+        xmlGenerator.printStartTag("label", "id", "odbiorca_nazwa_kraju");
         xmlGenerator.println("Nazwa kraju odbiorcy:");
+        xmlGenerator.printEndTag();
         getDataFromDB("select idKraju, kraj from kraje");
-        printResultSetContent(xmlGenerator, "kraj_odbiorcy");
+        printResultSetContent(xmlGenerator, "nazwa_kraju_odbiorcy");
+        xmlGenerator.printEmptyElement("br");
         
+        xmlGenerator.printStartTag("label", "id", "przesylka_typ");
         xmlGenerator.println("Typ przesyłki:");
+        xmlGenerator.printEndTag();
         getDataFromDB("select idTypu, typ from typyPrzesylek");
         printResultSetContent(xmlGenerator, "typ_przesylki");
+        xmlGenerator.printEmptyElement("br");
+        xmlGenerator.printEmptyElement("br");
         
         xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Dalej >>", "class", "tabEvaluator");
-        xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEndTag();
+        xmlGenerator.printEmptyElement("br");
         
         xmlGenerator.printStartTag("div", "class","tab tabList");
+        xmlGenerator.printStartTag("label", "id", "priorytet_list");
         xmlGenerator.println("List priorytetowy:");
+        xmlGenerator.printEndTag();
         xmlGenerator.printStartTag("select", "name", "list_priorytet");
 	xmlGenerator.printStartTag("option", "value", "Tak");
         xmlGenerator.println("Tak");
@@ -78,7 +120,9 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printEndTag();
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("br");
+        xmlGenerator.printStartTag("label", "id", "list_masa");
 	xmlGenerator.println("Masa listu:");
+        xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("input", "name", "masa_listu", "type", "text");
 	xmlGenerator.printEmptyElement("br");
 	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij list");
@@ -86,7 +130,9 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printEndTag(); // div class="tab tabList"
 
         xmlGenerator.printStartTag("div", "class","tab tabPaczka");
+        xmlGenerator.printStartTag("label", "id", "priorytet_paczka");
         xmlGenerator.println("Paczka priorytetowa:");
+        xmlGenerator.printEndTag();
         xmlGenerator.printStartTag("select", "name", "paczka_priorytet");
 	xmlGenerator.printStartTag("option", "value", "Tak");
         xmlGenerator.println("Tak");
@@ -96,26 +142,40 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printEndTag();
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("br");
-        xmlGenerator.println("Gabaryt paczki:");
+        
+        xmlGenerator.printStartTag("label", "id", "gabaryt_paczka");
+	xmlGenerator.println("Gabaryt paczki:");
+        xmlGenerator.printEndTag();
         getDataFromDB("select idGabarytu, opisGabarytu from gabaryty");
         printResultSetContent(xmlGenerator, "paczka_gabaryt");
+        xmlGenerator.printEmptyElement("br");
 
+        xmlGenerator.printStartTag("label", "id", "masa_paczka");
 	xmlGenerator.println("Masa paczki:");
-        xmlGenerator.printEmptyElement("input", "name", "masa_listu", "type", "text");
+        xmlGenerator.printEndTag();
+        xmlGenerator.printEmptyElement("input", "name", "masa_paczki", "type", "text");
 	xmlGenerator.printEmptyElement("br");
 	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij paczkę");
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEndTag();     //div class="tab tabPaczka"
 
         xmlGenerator.printStartTag("div", "class","tab tabPrzekaz");
+        xmlGenerator.printStartTag("label", "id", "przekaz_kwota");
         xmlGenerator.println("Kwota przekazu:");
-        xmlGenerator.printEmptyElement("input", "name", "masa_listu", "type", "text");
+        xmlGenerator.printEndTag();
+        xmlGenerator.printEmptyElement("input", "name", "kwota_przekazu", "type", "text");
 	xmlGenerator.printEmptyElement("br");
 	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij przekaz");
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEndTag();     //div class="tab tabPrzekaz"
         
         xmlGenerator.printEndTag();     // form
+        
+        for (Map.Entry i : parameterMap.entrySet())
+        {
+            xmlGenerator.println(i.getKey() + "\n" + i.getValue() + "\n");
+        }
+        
     }
 
     /**
@@ -169,7 +229,6 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         }
         
         xmlGenerator.printEndTag(); // zakonczenie znacznika select
-        xmlGenerator.printEmptyElement("br");
         try 
         {
             resultSet.close();
