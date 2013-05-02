@@ -40,26 +40,38 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
                 "type", "text/javascript",
                 "src", "../js/pages/formularz.js");
         xmlGenerator.printEndTag();
+       
+        xmlGenerator.printStartTag("script", 
+                "type", "text/javascript",
+                "src", "../js/pages/walidacja.formularza.przesylek.js");
+        xmlGenerator.printEndTag();
+        
         xmlGenerator.printStartTag("form", "action","","method","POST");
         
-        xmlGenerator.printStartTag("div", "class", /*"tab tabActive"*/ "");
+        xmlGenerator.printStartTag("div", "id", /*"tab tabActive"*/ "mainForm");
         
         xmlGenerator.printStartTag("label", "id", "nadawca_imie_nazwisko");
         xmlGenerator.println("Imię i nazwisko nadawcy (np. Jan Kowalski):");
         xmlGenerator.printEndTag();
-        xmlGenerator.printEmptyElement("input", "name","imie_nazwisko_nadawcy","type","text");
+        xmlGenerator.printEmptyElement("input", "name", "imie_nazwisko_nadawcy", 
+                "id", "imie_nazwisko_nadawcy", 
+                "type","text");
         xmlGenerator.printEmptyElement("br");
         
         xmlGenerator.printStartTag("label", "id", "nadawca_adres");
         xmlGenerator.println("Adres nadawcy - ulica oraz miasto (np. ul. Śliska 5a Szczecin):");
         xmlGenerator.printEndTag();
-        xmlGenerator.printEmptyElement("input", "name","adres_nadawcy","type","text");
+        xmlGenerator.printEmptyElement("input", "name", "adres_nadawcy", 
+                "id", "adres_nadawcy",
+                "type","text");
         xmlGenerator.printEmptyElement("br");
         
         xmlGenerator.printStartTag("label", "id", "nadawca_kod_pocztowy");
         xmlGenerator.println("Kod pocztowy nadawcy:");
         xmlGenerator.printEndTag();
-        xmlGenerator.printEmptyElement("input", "name","kod_pocztowy_nadawcy","type","text");
+        xmlGenerator.printEmptyElement("input", "name", "kod_pocztowy_nadawcy",
+                "id", "kod_pocztowy_nadawcy",
+                "type","text");
         xmlGenerator.printEmptyElement("br");
         
         xmlGenerator.printStartTag("label", "id", "nadawca_nazwa_kraju");
@@ -73,19 +85,25 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printStartTag("label", "id", "odbiorca_imie_nazwisko");
         xmlGenerator.println("Imię i nazwisko odbiorcy (np. Jan Kowalski):");
         xmlGenerator.printEndTag();
-        xmlGenerator.printEmptyElement("input", "name","imie_nazwisko_odbiorcy","type","text");
+        xmlGenerator.printEmptyElement("input", "name","imie_nazwisko_odbiorcy",
+                "id", "imie_nazwisko_odbiorcy",
+                "type","text");
         xmlGenerator.printEmptyElement("br");
         
         xmlGenerator.printStartTag("label", "id", "odbiorca_adres");
         xmlGenerator.println("Adres odbiorcy - ulica oraz miasto (np. ul. Śliska 5a Szczecin):");
         xmlGenerator.printEndTag();
-        xmlGenerator.printEmptyElement("input", "name","adres_odbiorcy","type","text");
+        xmlGenerator.printEmptyElement("input", "name","adres_odbiorcy",
+                "id", "adres_odbiorcy",
+                "type","text");
         xmlGenerator.printEmptyElement("br");
         
         xmlGenerator.printStartTag("label", "id", "odbiorca_kod_pocztowy");
         xmlGenerator.println("Kod pocztowy odbiorcy:");
         xmlGenerator.printEndTag();
-        xmlGenerator.printEmptyElement("input", "name","kod_pocztowy_odbiorcy","type","text");
+        xmlGenerator.printEmptyElement("input", "name","kod_pocztowy_odbiorcy",
+                "id", "kod_pocztowy_odbiorcy",
+                "type","text");
         xmlGenerator.printEmptyElement("br");
         
         xmlGenerator.printStartTag("label", "id", "odbiorca_nazwa_kraju");
@@ -95,7 +113,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         printResultSetContent(xmlGenerator, "nazwa_kraju_odbiorcy");
         xmlGenerator.printEmptyElement("br");
         
-        xmlGenerator.printStartTag("label", "id", "przesylka_typ");
+        xmlGenerator.printStartTag("label", "id", "przesylki_typ");
         xmlGenerator.println("Typ przesyłki:");
         xmlGenerator.printEndTag();
         getDataFromDB("select idTypu, typ from typyPrzesylek");
@@ -123,7 +141,9 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printStartTag("label", "id", "list_masa");
 	xmlGenerator.println("Masa listu:");
         xmlGenerator.printEndTag();
-        xmlGenerator.printEmptyElement("input", "name", "masa_listu", "type", "text");
+        xmlGenerator.printEmptyElement("input", "name", "masa_listu", 
+                "id", "masa_listu",
+                "type", "text");
 	xmlGenerator.printEmptyElement("br");
 	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij list");
         xmlGenerator.printEmptyElement("br");
@@ -153,7 +173,9 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printStartTag("label", "id", "masa_paczka");
 	xmlGenerator.println("Masa paczki:");
         xmlGenerator.printEndTag();
-        xmlGenerator.printEmptyElement("input", "name", "masa_paczki", "type", "text");
+        xmlGenerator.printEmptyElement("input", "name", "masa_paczki", 
+                "id", "masa_paczki",
+                "type", "text");
 	xmlGenerator.printEmptyElement("br");
 	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij paczkę");
         xmlGenerator.printEmptyElement("br");
@@ -163,7 +185,9 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printStartTag("label", "id", "przekaz_kwota");
         xmlGenerator.println("Kwota przekazu:");
         xmlGenerator.printEndTag();
-        xmlGenerator.printEmptyElement("input", "name", "kwota_przekazu", "type", "text");
+        xmlGenerator.printEmptyElement("input", "name", "kwota_przekazu", 
+                "id", "kwota_przekazu",
+                "type", "text");
 	xmlGenerator.printEmptyElement("br");
 	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij przekaz");
         xmlGenerator.printEmptyElement("br");
@@ -171,11 +195,14 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         
         xmlGenerator.printEndTag();     // form
         
-        for (Map.Entry i : parameterMap.entrySet())
+        for(Map.Entry<String, String[]> entry : parameterMap.entrySet()) 
         {
-            xmlGenerator.println(i.getKey() + "\n" + i.getValue() + "\n");
+            String[] wartosc = entry.getValue();
+            for (String i : wartosc)
+            {
+                System.out.println(i);
+            }
         }
-        
     }
 
     /**
