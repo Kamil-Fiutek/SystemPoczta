@@ -1,5 +1,5 @@
 $(function() 
-{
+{    
     $(".tabEvaluator").bind("click", function() 
     {
         reloadTabs();
