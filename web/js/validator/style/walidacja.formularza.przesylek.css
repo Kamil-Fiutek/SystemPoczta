@@ -1,0 +1,17 @@
+span.ValidationErrors 
+{
+	/* Sposób wyświetlania */
+    display: inline-block;
+    
+	/* Rozmiar czcionki */
+	font-size: 14px;
+	
+	/* Kolor czcionki */
+	color: red;
+	
+	/* Waga czcionki --> między innymi czy ma być pogrubiona czy normalna */
+	font-weight: bold;
+	
+	/* Odstęp od pola tekstowego */
+	padding-left: 10px;	
+}
