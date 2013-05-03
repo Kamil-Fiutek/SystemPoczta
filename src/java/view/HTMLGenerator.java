@@ -78,6 +78,11 @@ public class HTMLGenerator {
                 "src", "../js/validator/jquery.validate.js");
         xmlGenerator.printEndTag();
         
+        xmlGenerator.printEmptyElement("link",
+                "rel", "stylesheet",
+                "type", "text/css",
+                "href", "../js/validator/style/walidacja.formularza.przesylek.css");
+        
         xmlGenerator.printElement("title", title);
 
         xmlGenerator.printEndTag();// head
