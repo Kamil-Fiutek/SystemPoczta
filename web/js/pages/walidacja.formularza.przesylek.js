@@ -9,13 +9,13 @@ jQuery(function()
     
     jQuery("#adres_nadawcy").validate
     ({
-            expression: "if (VAL.match(/^[A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś1-9/]$/)) return true; else return false;",
+            expression: "if (VAL.match(/^[1-9a-z]{0,1}[ A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś]{2,34} ([0-9]{1,3}[/][0-9]{1,3}|[0-9]{1,3}[a-z]{1}) [A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś ]{2,34}$/)) return true; else return false;",
             message: "Proszę podać poprawny adres"
     });
 
     jQuery("#kod_pocztowy_nadawcy").validate
     ({
-            expression: "if (VAL.match(/^[1-9]{2}[-]{1}[1-9]{3}$/)) return true; else return false;",
+            expression: "if (VAL.match(/^\\d{2}-\\d{3}$/)) return true; else return false;",
             message: "Proszę podać poprawny kod pocztowy"
     });
     
@@ -27,13 +27,13 @@ jQuery(function()
     
     jQuery("#adres_odbiorcy").validate
     ({
-            expression: "if (VAL.match(/^[A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś1-9/]$/)) return true; else return false;",
+            expression: "if (VAL.match(/^[1-9a-z]{0,1}[ A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś]{2,34} ([0-9]{1,3}[/][0-9]{1,3}|[0-9]{1,3}[a-z]{1}) [A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś ]{2,34}$/)) return true; else return false;",
             message: "Proszę podać poprawny adres"
     });
 
     jQuery("#kod_pocztowy_odbiorcy").validate
     ({
-            expression: "if (VAL.match(/^[1-9]{2}[-]{1}[1-9]{3}$/)) return true; else return false;",
+            expression: "if (VAL.match(/^\\d{2}-\\d{3}$/)) return true; else return false;",
             message: "Proszę podać poprawny kod pocztowy"
     });
 
