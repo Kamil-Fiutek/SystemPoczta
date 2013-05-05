@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
@@ -22,10 +23,12 @@ import view.XMLGenerator;
 public class DefiniowaniePrzesylek implements model.ApplicationInterface{
 
     private ResultSet resultSet;
+    private String charactersUsedToGenerateShipmentID;
     
     public DefiniowaniePrzesylek()
     {
         this.resultSet = null;
+        this.charactersUsedToGenerateShipmentID = "0123456789";
     }
     
     @Override
@@ -121,7 +124,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEmptyElement("br");
         
-        xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Dalej >>", "class", "tabEvaluator");
+        xmlGenerator.printEmptyElement("input", "name", "dalej >>", "type", "submit", "value", "Dalej >>", "class", "tabEvaluator");
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("br");
         
@@ -145,7 +148,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
                 "id", "masa_listu",
                 "type", "text");
 	xmlGenerator.printEmptyElement("br");
-	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij list");
+	xmlGenerator.printEmptyElement("input", "name", "wyslij_list", "type", "submit", "value", "Wyślij list");
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEndTag(); // div class="tab tabList"
 
@@ -177,7 +180,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
                 "id", "masa_paczki",
                 "type", "text");
 	xmlGenerator.printEmptyElement("br");
-	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij paczkę");
+	xmlGenerator.printEmptyElement("input", "name", "wyslij_paczke", "type", "submit", "value", "Wyślij paczkę");
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEndTag();     //div class="tab tabPaczka"
 
@@ -189,19 +192,23 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
                 "id", "kwota_przekazu",
                 "type", "text");
 	xmlGenerator.printEmptyElement("br");
-	xmlGenerator.printEmptyElement("input", "name", "submit", "type", "submit", "value", "Wyślij przekaz");
+	xmlGenerator.printEmptyElement("input", "name", "wyslij_przekaz", "type", "submit", "value", "Wyślij przekaz");
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEndTag();     //div class="tab tabPrzekaz"
         
         xmlGenerator.printEndTag();     // form
         
-        for(Map.Entry<String, String[]> entry : parameterMap.entrySet()) 
+        if (parameterMap.get("wyslij_list") != null)
         {
-            String[] wartosc = entry.getValue();
-            for (String i : wartosc)
-            {
-                System.out.println(i);
-            }
+            getDataFromDB("select idPrzesylki from przesylki");
+            for(Map.Entry<String, String[]> entry : parameterMap.entrySet()) 
+             {
+                 String[] wartosc = entry.getValue();
+                 for (String i : wartosc)
+                 {
+                     System.out.println(i);
+                 }
+             }
         }
     }
 
@@ -265,4 +272,32 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
             Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public String generateShipmentID()
+    { 
+        Random random = new Random();
+        int length = this.charactersUsedToGenerateShipmentID.length();
+        char text[] = new char[length];
+        for (int i = 0; i < length; i++)
+        {
+            text[i] = this.charactersUsedToGenerateShipmentID.charAt(random.nextInt(length));
+        }
+        return new String(text);
+    }
+    /*
+    public boolean checkGeneratedShipmentID()
+    {
+        try 
+        {
+            while(resultSet.next() == true)
+            {
+                return true;
+            }
+        } 
+        catch (SQLException ex) 
+        {
+            Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    */
 }
