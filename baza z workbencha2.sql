@@ -121,7 +121,7 @@ DEFAULT CHARACTER SET = latin2;
 -- -----------------------------------------------------
 -- Table `poczta`.`lisy`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `poczta`.`lisy` (
+CREATE  TABLE IF NOT EXISTS `poczta`.`listy` (
   `idPrzesylki` BIGINT(20) UNSIGNED NOT NULL ,
   `priorytetowy` TINYINT(1) NOT NULL COMMENT 'To odpowiada za boolean' ,
   `masa` FLOAT NOT NULL COMMENT 'Masa w kg. Istotna przy obliczaniu ceny przesłania paczki.' ,
