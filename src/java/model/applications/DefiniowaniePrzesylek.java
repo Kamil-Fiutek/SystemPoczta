@@ -24,6 +24,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
 
     private ResultSet resultSet;
     private String charactersUsedToGenerateShipmentID;
+    private String priorytet;
     
     public DefiniowaniePrzesylek()
     {
@@ -32,13 +33,107 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
     }
     
     @Override
-    public String getTitle(Employee employee) {
+    public String getTitle(Employee employee) 
+    {
         return "Definiowanie przesyłek";
     }
 
     @Override
-    public void printApplication(Employee employee, HttpServletResponse httpServletResponse, XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession) {      
+    public void printApplication(Employee employee, HttpServletResponse httpServletResponse, XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession) 
+    {      
+        generateForm(xmlGenerator);
         
+        if (parameterMap.get("wyslij_list") != null)
+        {
+            String generatedShipmentID = generateShipmentID();
+            getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+           
+            while(checkGeneratedShipmentID() == true)
+            {
+                generatedShipmentID = generateShipmentID();
+                getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+            }
+            changeShipmentPriority(parameterMap, "list_priorytet");
+            
+            insertDataToDB("insert into przesylki values (" + generatedShipmentID + ", " 
+                    + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
+                    + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
+                    + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
+                    + "'" + parameterMap.get("adres_nadawcy")[0] + "', "
+                    + "'" + parameterMap.get("imie_nazwisko_odbiorcy")[0] + "', "
+                    + parameterMap.get("nazwa_kraju_odbiorcy")[0] + ", "
+                    + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
+                    + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
+                    + "NOW())");
+            insertDataToDB("insert into listy values(" + generatedShipmentID + ", "
+                    + priorytet + ", " + parameterMap.get("masa_listu")[0] + ")");
+            
+            xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
+        }
+        else if(parameterMap.get("wyslij_paczke") != null)
+        {
+            String generatedShipmentID = generateShipmentID();
+            getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+           
+            while(checkGeneratedShipmentID() == true)
+            {
+                generatedShipmentID = generateShipmentID();
+                getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+            }
+            changeShipmentPriority(parameterMap, "paczka_priorytet");
+            
+            insertDataToDB("insert into przesylki values (" + generatedShipmentID + ", " 
+                    + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
+                    + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
+                    + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
+                    + "'" + parameterMap.get("adres_nadawcy")[0] + "', "
+                    + "'" + parameterMap.get("imie_nazwisko_odbiorcy")[0] + "', "
+                    + parameterMap.get("nazwa_kraju_odbiorcy")[0] + ", "
+                    + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
+                    + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
+                    + "NOW())");
+            insertDataToDB("insert into paczki values(" + generatedShipmentID + ", "
+                    + priorytet + ", " + parameterMap.get("masa_paczki")[0] + ", "
+                    + parameterMap.get("paczka_gabaryt")[0] + ")");
+            
+            xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
+        }
+        else if (parameterMap.get("wyslij_przekaz") != null)
+        {
+            String generatedShipmentID = generateShipmentID();
+            getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+           
+            while(checkGeneratedShipmentID() == true)
+            {
+                generatedShipmentID = generateShipmentID();
+                getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+            }
+            changeShipmentPriority(parameterMap, "paczka_priorytet");
+            
+            insertDataToDB("insert into przesylki values (" + generatedShipmentID + ", " 
+                    + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
+                    + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
+                    + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
+                    + "'" + parameterMap.get("adres_nadawcy")[0] + "', "
+                    + "'" + parameterMap.get("imie_nazwisko_odbiorcy")[0] + "', "
+                    + parameterMap.get("nazwa_kraju_odbiorcy")[0] + ", "
+                    + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
+                    + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
+                    + "NOW())");
+            insertDataToDB("insert into przekazy values(" + generatedShipmentID + ", "
+                    + parameterMap.get("kwota_przekazu")[0] + ")");
+            
+            xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
+        }
+    }
+    
+    /**
+     * Tworzy formularz odpowiedzialny za definiowanie przesyłek.
+     * @param xmlGenerator Referencja do XMLGenerator dzięki, któremu 
+     * generowany jest formularz.
+     */
+    private void generateForm(XMLGenerator xmlGenerator)
+    {
         xmlGenerator.printStartTag("script",
                 "type", "text/javascript",
                 "src", "../js/pages/formularz.js");
@@ -46,10 +141,10 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
        
         xmlGenerator.printStartTag("script", 
                 "type", "text/javascript",
-                "src", "../js/pages/walidacja.formularza.przesylek.js");
+                "src", "../js/pages/walidacja.formularza.przesylek2.js");
         xmlGenerator.printEndTag();
         
-        xmlGenerator.printStartTag("form", "action","","method","POST");
+        xmlGenerator.printStartTag("form", "action","","method","POST", "id", "form1");
         
         xmlGenerator.printStartTag("div", "id", /*"tab tabActive"*/ "mainForm");
         
@@ -148,7 +243,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
                 "id", "masa_listu",
                 "type", "text");
 	xmlGenerator.printEmptyElement("br");
-	xmlGenerator.printEmptyElement("input", "name", "wyslij_list", "type", "submit", "value", "Wyślij list");
+	xmlGenerator.printEmptyElement("input", "type", "submit", "name", "wyslij_list", "value", "Wyślij list");
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEndTag(); // div class="tab tabList"
 
@@ -197,21 +292,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printEndTag();     //div class="tab tabPrzekaz"
         
         xmlGenerator.printEndTag();     // form
-        
-        if (parameterMap.get("wyslij_list") != null)
-        {
-            getDataFromDB("select idPrzesylki from przesylki");
-            for(Map.Entry<String, String[]> entry : parameterMap.entrySet()) 
-             {
-                 String[] wartosc = entry.getValue();
-                 for (String i : wartosc)
-                 {
-                     System.out.println(i);
-                 }
-             }
-        }
     }
-
+    
     /**
      * Pobiera dane z bazy danych określone zapytaniem przekazanym 
      * w argumencie metody.
@@ -226,6 +308,29 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         {
             statement = model.ConnectionSingleton.getConnection(null).createStatement();
             resultSet = statement.executeQuery(query);
+        } 
+        catch (ClassNotFoundException ex) 
+        { 
+            Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (SQLException ex) 
+        {
+            Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Metoda pozwala na wykonanie zapytań do bazy takich jak: INSERT, UPDATE, DELETE
+     * oraz zapytań, które nie zwracają niczego np SQL DDL.
+     * @param query Zapytanie SQL kierowane do bazy danych.
+     */
+    private void insertDataToDB(String query)
+    {
+        Statement statement;
+        try 
+        {
+            statement = model.ConnectionSingleton.getConnection(null).createStatement();
+            statement.executeUpdate(query);
         } 
         catch (ClassNotFoundException ex) 
         { 
@@ -273,7 +378,13 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         }
     }
     
-    public String generateShipmentID()
+    /**
+     * Genereuje ID przesyłki.
+     * Metoda generuje ID przesyłki w oparciu o prywatne pole klasy
+     * charactersUsedToGenerateShipmentID.
+     * @return Wygenerowane ID przesyłki w postaci String'a.
+     */
+    private String generateShipmentID()
     { 
         Random random = new Random();
         int length = this.charactersUsedToGenerateShipmentID.length();
@@ -284,20 +395,51 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         }
         return new String(text);
     }
-    /*
-    public boolean checkGeneratedShipmentID()
+    
+    /**
+     * Sprawdza czy wygenerowane ID przesyłki już istnieje w bazie danych.
+     * Spradwzenie czy w bazie istnieje rekord o wygenerowanym ID polega na
+     * wykonaniu select count(*) z tabeli przesylki gdzie idPrzesylki
+     * równa się wygenerowanemu ID. Następnie sprawdzana jest liczba wierszy.
+     * Gdy jest ona > 0 zwracane jest true. W przeciwnym wypadku false. 
+     * @return true, gdy w bazie istnieje rekord o wygenerowanym ID.
+     *         false, gdy w bazie nie istnieje rekord o wygenerowanym ID.
+     */
+    private boolean checkGeneratedShipmentID()
     {
+        int rowCount = 0;
         try 
         {
-            while(resultSet.next() == true)
-            {
-                return true;
-            }
+            resultSet.next();
+            rowCount = resultSet.getInt(1);
         } 
         catch (SQLException ex) 
         {
             Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        if (rowCount > 0)
+        {
+            return true;
+        }
+        return false;
     }
-    */
+    
+    /**
+     * Zmienia priorytet przesyłki z Tak / Nie na 1 lub 0. 
+     * @param parameterMap Parametry wprowadzone przez użytkownika w formularz.
+     * @param formFieldName Nazwa pola w formularzu, którego wartość zostaje wyciągnięta z 
+     * parameterMap.
+     */
+    private void changeShipmentPriority(Map<String, String[]> parameterMap, String formFieldName)
+    {
+        if(parameterMap.get(formFieldName)[0].equals("Tak"))
+        {
+            priorytet = "1"; 
+        }
+        else
+        {
+            priorytet = "0";
+        }
+    }
 }
