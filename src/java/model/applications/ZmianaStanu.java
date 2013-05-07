@@ -73,6 +73,13 @@ public class ZmianaStanu implements model.ApplicationInterface {
              
              xmlGenerator.println(packageID);
              
+             try{
+                int ID = Integer.parseInt(packageID);
+             }
+             catch(NumberFormatException e){
+                 xmlGenerator.println("Wprowadzono nieodpowiedni format danych");
+             }
+             
                xmlGenerator.println("Kliknieto przycisk Zatwierdz"); 
          }
          else{
