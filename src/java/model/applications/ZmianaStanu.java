@@ -35,7 +35,7 @@ public class ZmianaStanu implements model.ApplicationInterface {
 
         return "Zmiana Statusu przesylki";
     }
-
+    
     /**
      *
      * @param employee
@@ -67,7 +67,6 @@ public class ZmianaStanu implements model.ApplicationInterface {
 
         xmlGenerator.printEndTag();
 
-        //
         if (parameterMap.get("numer_przesylki") != null) {
             String packageID = parameterMap.get("numer_przesylki")[0];
 
@@ -79,7 +78,6 @@ public class ZmianaStanu implements model.ApplicationInterface {
                 xmlGenerator.println("Wprowadzono nieodpowiedni format danych");
             }
 
-            //
             boolean test = checkPackageID(packageID);
 
             if (test == false) {
@@ -89,13 +87,11 @@ public class ZmianaStanu implements model.ApplicationInterface {
                 String abc = resultSet.toString();
                 xmlGenerator.println(abc);
             }
-            //
-
 
             xmlGenerator.println("Kliknieto przycisk Zatwierdz");
         } else {
         }
-        //
+
     }
 
     /**
