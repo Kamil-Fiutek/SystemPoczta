@@ -19,7 +19,7 @@ import model.Employee;
 public class Servlet extends HttpServlet {
 
     model.ApplicationInterface[] apps = {
-        new model.applications.Logowanie(),
+       // new model.applications.Logowanie(),
         new model.applications.stanPrzesylki(),
         new model.applications.DefiniowaniePrzesylek(),
         new model.applications.ZmianaStanu()};
