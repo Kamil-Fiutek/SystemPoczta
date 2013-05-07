@@ -214,4 +214,8 @@ public class XMLGenerator {
         }
         printWriter.close();
     }
+
+    public void println(String[] temp) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
