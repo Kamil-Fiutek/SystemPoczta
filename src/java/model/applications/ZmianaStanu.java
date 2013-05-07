@@ -74,11 +74,25 @@ public class ZmianaStanu implements model.ApplicationInterface {
              xmlGenerator.println(packageID);
              
              try{
-                int ID = Integer.parseInt(packageID);
+                int IDtest = Integer.parseInt(packageID);
              }
              catch(NumberFormatException e){
                  xmlGenerator.println("Wprowadzono nieodpowiedni format danych");
              }
+             
+             //
+             boolean test = checkPackageID(packageID);
+             
+             if (test == false){
+                 xmlGenerator.println("Podana paczka nie istnieje !");
+             }
+             else{
+                 xmlGenerator.println("Podana paczka istnieje !");
+                 String abc = resultSet.toString();
+                 xmlGenerator.println(abc);
+             }
+             //
+             
              
                xmlGenerator.println("Kliknieto przycisk Zatwierdz"); 
          }
@@ -140,17 +154,20 @@ public class ZmianaStanu implements model.ApplicationInterface {
 
         try {
             statement = model.ConnectionSingleton.getConnection(null).createStatement();
-            resultSet = statement.executeQuery(query);
+           resultSet = statement.executeQuery(query);
+                
+        if (resultSet != null) {
+            return true;
+        } else {
+            return false;
+        }
+           
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        if (resultSet != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 }
