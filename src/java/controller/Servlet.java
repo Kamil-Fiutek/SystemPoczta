@@ -19,7 +19,7 @@ import model.Employee;
 public class Servlet extends HttpServlet {
 
     model.ApplicationInterface[] apps = {
-        new model.applications.logowanie(),
+        new model.applications.Logowanie(),
         new model.applications.stanPrzesylki(),
         new model.applications.DefiniowaniePrzesylek(),
         new model.applications.ZmianaStanu()};
@@ -150,7 +150,7 @@ public class Servlet extends HttpServlet {
         // Lista aplikacji:
         xmlGenerator.printStartTag("ul");
         for (int i = 0; i < apps.length; ++i) {
-            if (apps[i] != null && apps[i].getTitle(employee) != null) {
+            if (apps[i] != null && apps[i].getTitle(employee) != null && employee.getRight(i)) {
                 if (i == wI) {
                     xmlGenerator.printStartTag("b");
                 }
