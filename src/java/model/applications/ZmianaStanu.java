@@ -66,42 +66,43 @@ public class ZmianaStanu implements model.ApplicationInterface {
         xmlGenerator.printEmptyElement("br");
 
         xmlGenerator.printEndTag();
-        
+
         //
-         if (parameterMap.get("numer_przesylki") != null){
+        if (parameterMap.get("numer_przesylki") != null) {
             String packageID = parameterMap.get("numer_przesylki")[0];
-             
-             xmlGenerator.println(packageID);
-             
-             try{
+
+            xmlGenerator.println(packageID);
+
+            try {
                 int IDtest = Integer.parseInt(packageID);
-             }
-             catch(NumberFormatException e){
-                 xmlGenerator.println("Wprowadzono nieodpowiedni format danych");
-             }
-             
-             //
-             boolean test = checkPackageID(packageID);
-             
-             if (test == false){
-                 xmlGenerator.println("Podana paczka nie istnieje !");
-             }
-             else{
-                 xmlGenerator.println("Podana paczka istnieje !");
-                 String abc = resultSet.toString();
-                 xmlGenerator.println(abc);
-             }
-             //
-             
-             
-               xmlGenerator.println("Kliknieto przycisk Zatwierdz"); 
-         }
-         else{
-           
-         }
+            } catch (NumberFormatException e) {
+                xmlGenerator.println("Wprowadzono nieodpowiedni format danych");
+            }
+
+            //
+            boolean test = checkPackageID(packageID);
+
+            if (test == false) {
+                xmlGenerator.println("Podana paczka nie istnieje !");
+            } else {
+                xmlGenerator.println("Podana paczka istnieje !");
+                String abc = resultSet.toString();
+                xmlGenerator.println(abc);
+            }
+            //
+
+
+            xmlGenerator.println("Kliknieto przycisk Zatwierdz");
+        } else {
+        }
         //
     }
 
+    /**
+     *
+     * @param xmlGenerator
+     * @param fieldName
+     */
     private void printResultSetContent(XMLGenerator xmlGenerator, String fieldName) {
         xmlGenerator.printStartTag("select", "name", fieldName);
         try {
@@ -122,6 +123,10 @@ public class ZmianaStanu implements model.ApplicationInterface {
         }
     }
 
+    /**
+     *
+     * @param query
+     */
     private void getDataFromDB(String query) {
         Statement statement;
         try {
@@ -134,34 +139,24 @@ public class ZmianaStanu implements model.ApplicationInterface {
         }
     }
 
-    private boolean checkGeneratedShipmentID() {
-        int rowCount = 0;
-        try {
-            resultSet.next();
-            rowCount = resultSet.getInt(1);
-        } catch (SQLException ex) {
-            Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        if (rowCount > 0) {
-            return true;
-        }
-        return false;
-    }
-
+    /**
+     *
+     * @param query
+     * @return
+     */
     private boolean checkPackageID(String query) {
         Statement statement;
 
         try {
             statement = model.ConnectionSingleton.getConnection(null).createStatement();
-           resultSet = statement.executeQuery(query);
-                
-        if (resultSet != null) {
-            return true;
-        } else {
-            return false;
-        }
-           
+            resultSet = statement.executeQuery(query);
+
+            if (resultSet != null) {
+                return true;
+            } else {
+                return false;
+            }
+
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
