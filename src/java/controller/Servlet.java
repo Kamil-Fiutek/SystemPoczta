@@ -10,29 +10,29 @@ import javax.servlet.http.HttpSession;
 import model.Employee;
 
 /**
- * Główny servlet systemu. Odpowiada za połączenie z bazą danych i udostępnienie
- * wszystkich aplikacji systemu.
- *
- * @author Adrian Scheit
- * @version 1.0
- */
+* Główny servlet systemu. Odpowiada za połączenie z bazą danych i udostępnienie
+* wszystkich aplikacji systemu.
+*
+* @author Adrian Scheit
+* @version 1.0
+*/
 public class Servlet extends HttpServlet {
 
     model.ApplicationInterface[] apps = {
-        //new model.applications.Logowanie(),
+        new model.applications.Logowanie(),
         new model.applications.stanPrzesylki(),
         new model.applications.DefiniowaniePrzesylek(),
         new model.applications.ZmianaStanu()};
 
     /**
-     * Tworzy połączenie z bazą danych. Jeśli napotkano wyjatek
-     * ClassNotFoundException czy też SQLException to wyrzucany jest
-     * ServletException.
-     *
-     * @throws ServletException Defines a general exception a servlet can throw
-     * when it encounters difficulty.
-     *
-     */
+* Tworzy połączenie z bazą danych. Jeśli napotkano wyjatek
+* ClassNotFoundException czy też SQLException to wyrzucany jest
+* ServletException.
+*
+* @throws ServletException Defines a general exception a servlet can throw
+* when it encounters difficulty.
+*
+*/
     @Override
     public void init() throws ServletException {
         try {
@@ -46,8 +46,8 @@ public class Servlet extends HttpServlet {
     }
 
     /**
-     * Zamyka połączenie z bazą danych.
-     */
+* Zamyka połączenie z bazą danych.
+*/
     @Override
     public void destroy() {
         try {
@@ -58,15 +58,15 @@ public class Servlet extends HttpServlet {
     }
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+* Processes requests for both HTTP
+* <code>GET</code> and
+* <code>POST</code> methods.
+*
+* @param request servlet request
+* @param response servlet response
+* @throws ServletException if a servlet-specific error occurs
+* @throws IOException if an I/O error occurs
+*/
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -85,21 +85,21 @@ public class Servlet extends HttpServlet {
 
         Integer wI = null;
         /*
-         wI = (Integer) httpSession.getAttribute("app");
-         if (wI == null) {
-         wI = new Integer(0);// Default application!
-         httpSession.setAttribute("app", wI);
-         }
+wI = (Integer) httpSession.getAttribute("app");
+if (wI == null) {
+wI = new Integer(0);// Default application!
+httpSession.setAttribute("app", wI);
+}
 
-         try {
-         wI = Integer.parseInt(request.getParameter("app")); // Jeśli się uda to nadpisuje. Jesto ok.
-         } catch (NumberFormatException e) {
-         } catch (NullPointerException e) {
-         }
-         if (wI < 0 || wI >= apps.length || apps[wI] == null) {
-         wI = 0; // Default application - musi być prawidłowy
-         }
-         */
+try {
+wI = Integer.parseInt(request.getParameter("app")); // Jeśli się uda to nadpisuje. Jesto ok.
+} catch (NumberFormatException e) {
+} catch (NullPointerException e) {
+}
+if (wI < 0 || wI >= apps.length || apps[wI] == null) {
+wI = 0; // Default application - musi być prawidłowy
+}
+*/
 
 
 
@@ -187,14 +187,14 @@ public class Servlet extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+* Handles the HTTP
+* <code>GET</code> method.
+*
+* @param request servlet request
+* @param response servlet response
+* @throws ServletException if a servlet-specific error occurs
+* @throws IOException if an I/O error occurs
+*/
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -202,14 +202,14 @@ public class Servlet extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+* Handles the HTTP
+* <code>POST</code> method.
+*
+* @param request servlet request
+* @param response servlet response
+* @throws ServletException if a servlet-specific error occurs
+* @throws IOException if an I/O error occurs
+*/
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
