@@ -35,7 +35,7 @@ public class ZmianaStanu implements model.ApplicationInterface {
 
         return "Zmiana Statusu przesylki";
     }
-    
+
     /**
      *
      * @param employee
@@ -84,8 +84,13 @@ public class ZmianaStanu implements model.ApplicationInterface {
                 xmlGenerator.println("Podana paczka nie istnieje !");
             } else {
                 xmlGenerator.println("Podana paczka istnieje !");
-                String abc = resultSet.toString();
-                xmlGenerator.println(abc);
+                String data = resultSet.toString();
+                xmlGenerator.println(data);
+
+                data = parameterMap.get("status_przesylki")[0];
+
+                String query = "UPDATE statusyPrzesylek SET statusPrzesylki =" + data + "WHERE idStautusPrzesylki =" + packageID;
+                insertDataToDB(query);
             }
 
             xmlGenerator.println("Kliknieto przycisk Zatwierdz");
@@ -160,5 +165,21 @@ public class ZmianaStanu implements model.ApplicationInterface {
         }
 
         return false;
+    }
+
+    /**
+     *
+     * @param query
+     */
+    private void insertDataToDB(String query) {
+        Statement statement;
+        try {
+            statement = model.ConnectionSingleton.getConnection(null).createStatement();
+            statement.executeUpdate(query);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
