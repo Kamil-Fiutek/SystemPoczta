@@ -3,7 +3,11 @@ package model;
 import com.mysql.jdbc.MySQLConnection;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
 import org.gjt.mm.mysql.Driver;
 
@@ -26,7 +30,6 @@ public class ConnectionSingleton {
      * org.apache.derby.jdbc.ClientDriver
      */
     private static String driverName = "com.mysql.jdbc.Driver";
-    
     /**
      * Prywatna statyczna referencja na jedyną instancję klasy
      * <code>java.sql.Connection</code>
@@ -87,7 +90,7 @@ public class ConnectionSingleton {
                         servletConfig.getInitParameter("user"),
                         servletConfig.getInitParameter("password"));
             }
-            
+
         }
 
         return connection;
@@ -161,5 +164,50 @@ public class ConnectionSingleton {
             connection.close();
             connection = null;
         }
+    }
+
+    /**
+     * Wygonuje zapytanie SQL SELECT.
+     *
+     * @param query Treść zapytania
+     * @return ResultSet z wynikiem zapytania. Null w razie błędu. Należy
+     * zamknąć zwrócony resultSet gdy nie będzie już potrzebny.
+     */
+    public static ResultSet executeQuery(String query) {
+        ResultSet result = null;
+
+        if (connection != null) {
+            try {
+                Statement statement = connection.createStatement();
+                result = statement.executeQuery(query);
+                statement.closeOnCompletion();
+            } catch (SQLException e) {
+                result = null;
+                Logger.getLogger(ConnectionSingleton.class.getName()).log(Level.SEVERE, null, e);
+            }
+        }
+
+        return result;
+    }
+/**
+ * Wykonuje zapytanie SQL INSTER, UPDATE i.t.p.
+ * @param query Treść zapytania.
+ * @return Ilość zaktualizowanych wierszy. Null jeśli napotkano błąd.
+ */
+    public static Integer executeUpdate(String query) {
+        Integer result = null;
+
+        if (connection != null) {
+            try {
+                Statement statement = connection.createStatement();
+                result = statement.executeUpdate(query);
+                statement.close();
+            } catch (SQLException e) {
+                result = null;
+                Logger.getLogger(ConnectionSingleton.class.getName()).log(Level.SEVERE, null, e);
+            }
+        }
+
+        return result;
     }
 }

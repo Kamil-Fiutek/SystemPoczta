@@ -151,7 +151,7 @@ public class ZmianaStanu implements model.ApplicationInterface {
         try {
             statement = model.ConnectionSingleton.getConnection(null).createStatement();
             resultSet = statement.executeQuery(query);
-
+            
             if (resultSet != null) {
                 return true;
             } else {
