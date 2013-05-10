@@ -180,7 +180,6 @@ public class ConnectionSingleton {
             try {
                 Statement statement = connection.createStatement();
                 result = statement.executeQuery(query);
-                statement.closeOnCompletion();
             } catch (SQLException e) {
                 result = null;
                 Logger.getLogger(ConnectionSingleton.class.getName()).log(Level.SEVERE, null, e);
