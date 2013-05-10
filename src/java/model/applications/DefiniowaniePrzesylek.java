@@ -46,16 +46,18 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         if (parameterMap.get("wyslij_list") != null)
         {
             String generatedShipmentID = generateShipmentID();
-            getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+            resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
+                    + "from przesylki where idPrzesylki = " + generatedShipmentID);
            
             while(checkGeneratedShipmentID() == true)
             {
                 generatedShipmentID = generateShipmentID();
-                getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+                resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
+                        + "from przesylki where idPrzesylki = " + generatedShipmentID);
             }
             changeShipmentPriority(parameterMap, "list_priorytet");
             
-            insertDataToDB("insert into przesylki values (" + generatedShipmentID + ", " 
+            model.ConnectionSingleton.executeUpdate("insert into przesylki values (" + generatedShipmentID + ", " 
                     + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
                     + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
                     + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
@@ -65,7 +67,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
                     + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
                     + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
                     + "NOW())");
-            insertDataToDB("insert into listy values(" + generatedShipmentID + ", "
+            model.ConnectionSingleton.executeUpdate("insert into listy values(" + generatedShipmentID + ", "
                     + priorytet + ", " + parameterMap.get("masa_listu")[0] + ")");
             
             xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
@@ -73,16 +75,18 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         else if(parameterMap.get("wyslij_paczke") != null)
         {
             String generatedShipmentID = generateShipmentID();
-            getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+            resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
+                    + "from przesylki where idPrzesylki = " + generatedShipmentID);
            
             while(checkGeneratedShipmentID() == true)
             {
                 generatedShipmentID = generateShipmentID();
-                getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+                resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
+                        + "from przesylki where idPrzesylki = " + generatedShipmentID);
             }
             changeShipmentPriority(parameterMap, "paczka_priorytet");
             
-            insertDataToDB("insert into przesylki values (" + generatedShipmentID + ", " 
+            model.ConnectionSingleton.executeUpdate("insert into przesylki values (" + generatedShipmentID + ", " 
                     + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
                     + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
                     + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
@@ -92,7 +96,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
                     + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
                     + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
                     + "NOW())");
-            insertDataToDB("insert into paczki values(" + generatedShipmentID + ", "
+            model.ConnectionSingleton.executeUpdate("insert into paczki values(" + generatedShipmentID + ", "
                     + priorytet + ", " + parameterMap.get("masa_paczki")[0] + ", "
                     + parameterMap.get("paczka_gabaryt")[0] + ")");
             
@@ -101,16 +105,17 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         else if (parameterMap.get("wyslij_przekaz") != null)
         {
             String generatedShipmentID = generateShipmentID();
-            getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+            resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
+                    + "from przesylki where idPrzesylki = " + generatedShipmentID);
            
             while(checkGeneratedShipmentID() == true)
             {
                 generatedShipmentID = generateShipmentID();
-                getDataFromDB("select count(*) from przesylki where idPrzesylki = " + generatedShipmentID);
+                resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
+                        + "from przesylki where idPrzesylki = " + generatedShipmentID);
             }
-            changeShipmentPriority(parameterMap, "paczka_priorytet");
             
-            insertDataToDB("insert into przesylki values (" + generatedShipmentID + ", " 
+            model.ConnectionSingleton.executeUpdate("insert into przesylki values (" + generatedShipmentID + ", " 
                     + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
                     + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
                     + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
@@ -120,7 +125,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
                     + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
                     + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
                     + "NOW())");
-            insertDataToDB("insert into przekazy values(" + generatedShipmentID + ", "
+            model.ConnectionSingleton.executeUpdate("insert into przekazy values(" + generatedShipmentID + ", "
                     + parameterMap.get("kwota_przekazu")[0] + ")");
             
             xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
@@ -175,7 +180,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printStartTag("label", "id", "nadawca_nazwa_kraju");
         xmlGenerator.println( "Nazwa kraju nadawcy:");
         xmlGenerator.printEndTag();
-        getDataFromDB("select idKraju, kraj from kraje");
+        resultSet = model.ConnectionSingleton.executeQuery("select idKraju, kraj from kraje");
         printResultSetContent(xmlGenerator, "nazwa_kraju_nadawcy");
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEmptyElement("br");
@@ -207,14 +212,14 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printStartTag("label", "id", "odbiorca_nazwa_kraju");
         xmlGenerator.println("Nazwa kraju odbiorcy:");
         xmlGenerator.printEndTag();
-        getDataFromDB("select idKraju, kraj from kraje");
+        resultSet = model.ConnectionSingleton.executeQuery("select idKraju, kraj from kraje");
         printResultSetContent(xmlGenerator, "nazwa_kraju_odbiorcy");
         xmlGenerator.printEmptyElement("br");
         
         xmlGenerator.printStartTag("label", "id", "przesylki_typ");
         xmlGenerator.println("Typ przesyłki:");
         xmlGenerator.printEndTag();
-        getDataFromDB("select idTypu, typ from typyPrzesylek");
+        resultSet = model.ConnectionSingleton.executeQuery("select idTypu, typ from typyPrzesylek");
         printResultSetContent(xmlGenerator, "typ_przesylki");
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEmptyElement("br");
@@ -264,7 +269,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         xmlGenerator.printStartTag("label", "id", "gabaryt_paczka");
 	xmlGenerator.println("Gabaryt paczki:");
         xmlGenerator.printEndTag();
-        getDataFromDB("select idGabarytu, opisGabarytu from gabaryty");
+        resultSet = model.ConnectionSingleton.executeQuery("select idGabarytu, opisGabarytu from gabaryty");
         printResultSetContent(xmlGenerator, "paczka_gabaryt");
         xmlGenerator.printEmptyElement("br");
 
@@ -293,55 +298,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         
         xmlGenerator.printEndTag();     // form
     }
-    
-    /**
-     * Pobiera dane z bazy danych określone zapytaniem przekazanym 
-     * w argumencie metody.
-     * W pierwszej kolejności pobieramy połączenie do bazy danych, a następnie
-     * tworzymy zapytanie. Wynik zapytania zostaje zapisany do prywatnej referencji ResultSet.
-     * @param query Zapytanie SQL kierowane do bazy danych.
-     */
-    private void getDataFromDB(String query)
-    {
-        Statement statement;
-        try 
-        {
-            statement = model.ConnectionSingleton.getConnection(null).createStatement();
-            resultSet = statement.executeQuery(query);
-        } 
-        catch (ClassNotFoundException ex) 
-        { 
-            Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        catch (SQLException ex) 
-        {
-            Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    /**
-     * Metoda pozwala na wykonanie zapytań do bazy takich jak: INSERT, UPDATE, DELETE
-     * oraz zapytań, które nie zwracają niczego np SQL DDL.
-     * @param query Zapytanie SQL kierowane do bazy danych.
-     */
-    private void insertDataToDB(String query)
-    {
-        Statement statement;
-        try 
-        {
-            statement = model.ConnectionSingleton.getConnection(null).createStatement();
-            statement.executeUpdate(query);
-        } 
-        catch (ClassNotFoundException ex) 
-        { 
-            Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        catch (SQLException ex) 
-        {
-            Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
+        
     /**
      * Drukuje w liście rozwijanej zawartość ResultSet'u.
      * Metoda drukuje zawartość ResultSet'u, który został wcześniej pobrany z 
