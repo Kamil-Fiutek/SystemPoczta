@@ -29,7 +29,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
     public DefiniowaniePrzesylek()
     {
         this.resultSet = null;
-        this.charactersUsedToGenerateShipmentID = "0123456789";
+        this.charactersUsedToGenerateShipmentID = "1234567890";
     }
     
     @Override
@@ -348,7 +348,14 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         char text[] = new char[length];
         for (int i = 0; i < length; i++)
         {
-            text[i] = this.charactersUsedToGenerateShipmentID.charAt(random.nextInt(length));
+            if (i == 0)
+            {
+                text[i] = this.charactersUsedToGenerateShipmentID.charAt(random.nextInt(length - 1));
+            }
+            else
+            {
+                text[i] = this.charactersUsedToGenerateShipmentID.charAt(random.nextInt(length));
+            }
         }
         return new String(text);
     }
