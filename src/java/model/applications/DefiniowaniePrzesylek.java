@@ -6,7 +6,7 @@ package model.applications;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
@@ -23,12 +23,14 @@ import view.XMLGenerator;
 public class DefiniowaniePrzesylek implements model.ApplicationInterface{
 
     private ResultSet resultSet;
+    private ArrayList<String> formErrorsList;
     private String charactersUsedToGenerateShipmentID;
     private String priorytet;
     
     public DefiniowaniePrzesylek()
     {
         this.resultSet = null;
+        this.formErrorsList = new ArrayList<String>();
         this.charactersUsedToGenerateShipmentID = "1234567890";
     }
     
@@ -40,95 +42,122 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
 
     @Override
     public void printApplication(Employee employee, HttpServletResponse httpServletResponse, XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession) 
-    {      
+    {
         generateForm(xmlGenerator);
         
         if (parameterMap.get("wyslij_list") != null)
         {
-            String generatedShipmentID = generateShipmentID();
-            resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
-                    + "from przesylki where idPrzesylki = " + generatedShipmentID);
-           
-            while(checkGeneratedShipmentID() == true)
+            validateMainForm(parameterMap);
+            validateLetterMass(parameterMap);
+            if (formErrorsList.isEmpty() == true)
             {
-                generatedShipmentID = generateShipmentID();
+                String generatedShipmentID = generateShipmentID();
                 resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
                         + "from przesylki where idPrzesylki = " + generatedShipmentID);
+
+                while(checkGeneratedShipmentID() == true)
+                {
+                    generatedShipmentID = generateShipmentID();
+                    resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
+                            + "from przesylki where idPrzesylki = " + generatedShipmentID);
+                }
+                changeShipmentPriority(parameterMap, "list_priorytet");
+
+                model.ConnectionSingleton.executeUpdate("insert into przesylki values (" + generatedShipmentID + ", " 
+                        + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
+                        + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
+                        + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
+                        + "'" + parameterMap.get("adres_nadawcy")[0] + "', "
+                        + "'" + parameterMap.get("imie_nazwisko_odbiorcy")[0] + "', "
+                        + parameterMap.get("nazwa_kraju_odbiorcy")[0] + ", "
+                        + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
+                        + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
+                        + "NOW())");
+                model.ConnectionSingleton.executeUpdate("insert into listy values(" + generatedShipmentID + ", "
+                        + priorytet + ", " + parameterMap.get("masa_listu")[0] + ")");
+
+                printShipmentID(xmlGenerator, generatedShipmentID);
             }
-            changeShipmentPriority(parameterMap, "list_priorytet");
-            
-            model.ConnectionSingleton.executeUpdate("insert into przesylki values (" + generatedShipmentID + ", " 
-                    + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
-                    + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
-                    + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
-                    + "'" + parameterMap.get("adres_nadawcy")[0] + "', "
-                    + "'" + parameterMap.get("imie_nazwisko_odbiorcy")[0] + "', "
-                    + parameterMap.get("nazwa_kraju_odbiorcy")[0] + ", "
-                    + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
-                    + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
-                    + "NOW())");
-            model.ConnectionSingleton.executeUpdate("insert into listy values(" + generatedShipmentID + ", "
-                    + priorytet + ", " + parameterMap.get("masa_listu")[0] + ")");
-            
-            xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
+            else
+            {
+                printFormErrors(xmlGenerator);
+            }
         }
         else if(parameterMap.get("wyslij_paczke") != null)
         {
-            String generatedShipmentID = generateShipmentID();
-            resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
-                    + "from przesylki where idPrzesylki = " + generatedShipmentID);
-           
-            while(checkGeneratedShipmentID() == true)
+            validateMainForm(parameterMap);
+            validatePackageMass(parameterMap);
+            if(formErrorsList.isEmpty() == true)
             {
-                generatedShipmentID = generateShipmentID();
+                String generatedShipmentID = generateShipmentID();
                 resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
                         + "from przesylki where idPrzesylki = " + generatedShipmentID);
+
+                while(checkGeneratedShipmentID() == true)
+                {
+                    generatedShipmentID = generateShipmentID();
+                    resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
+                            + "from przesylki where idPrzesylki = " + generatedShipmentID);
+                }
+                changeShipmentPriority(parameterMap, "paczka_priorytet");
+
+                model.ConnectionSingleton.executeUpdate("insert into przesylki values (" + generatedShipmentID + ", " 
+                        + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
+                        + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
+                        + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
+                        + "'" + parameterMap.get("adres_nadawcy")[0] + "', "
+                        + "'" + parameterMap.get("imie_nazwisko_odbiorcy")[0] + "', "
+                        + parameterMap.get("nazwa_kraju_odbiorcy")[0] + ", "
+                        + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
+                        + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
+                        + "NOW())");
+                model.ConnectionSingleton.executeUpdate("insert into paczki values(" + generatedShipmentID + ", "
+                        + priorytet + ", " + parameterMap.get("masa_paczki")[0] + ", "
+                        + parameterMap.get("paczka_gabaryt")[0] + ")");
+
+                printShipmentID(xmlGenerator, generatedShipmentID);
             }
-            changeShipmentPriority(parameterMap, "paczka_priorytet");
-            
-            model.ConnectionSingleton.executeUpdate("insert into przesylki values (" + generatedShipmentID + ", " 
-                    + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
-                    + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
-                    + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
-                    + "'" + parameterMap.get("adres_nadawcy")[0] + "', "
-                    + "'" + parameterMap.get("imie_nazwisko_odbiorcy")[0] + "', "
-                    + parameterMap.get("nazwa_kraju_odbiorcy")[0] + ", "
-                    + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
-                    + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
-                    + "NOW())");
-            model.ConnectionSingleton.executeUpdate("insert into paczki values(" + generatedShipmentID + ", "
-                    + priorytet + ", " + parameterMap.get("masa_paczki")[0] + ", "
-                    + parameterMap.get("paczka_gabaryt")[0] + ")");
-            
-            xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
+            else
+            {
+                printFormErrors(xmlGenerator);
+            }
         }
         else if (parameterMap.get("wyslij_przekaz") != null)
         {
-            String generatedShipmentID = generateShipmentID();
-            resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
-                    + "from przesylki where idPrzesylki = " + generatedShipmentID);
-           
-            while(checkGeneratedShipmentID() == true)
+            validateMainForm(parameterMap);
+            validateOrderAmount(parameterMap);
+            if(formErrorsList.isEmpty() == true)
             {
-                generatedShipmentID = generateShipmentID();
+                String generatedShipmentID = generateShipmentID();
                 resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
                         + "from przesylki where idPrzesylki = " + generatedShipmentID);
+
+                while(checkGeneratedShipmentID() == true)
+                {
+                    generatedShipmentID = generateShipmentID();
+                    resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
+                            + "from przesylki where idPrzesylki = " + generatedShipmentID);
+                }
+
+                model.ConnectionSingleton.executeUpdate("insert into przesylki values (" + generatedShipmentID + ", " 
+                        + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
+                        + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
+                        + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
+                        + "'" + parameterMap.get("adres_nadawcy")[0] + "', "
+                        + "'" + parameterMap.get("imie_nazwisko_odbiorcy")[0] + "', "
+                        + parameterMap.get("nazwa_kraju_odbiorcy")[0] + ", "
+                        + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
+                        + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
+                        + "NOW())");
+                model.ConnectionSingleton.executeUpdate("insert into przekazy values(" + generatedShipmentID + ", "
+                        + parameterMap.get("kwota_przekazu")[0] + ")");
+
+                printShipmentID(xmlGenerator, generatedShipmentID);
             }
-            
-            model.ConnectionSingleton.executeUpdate("insert into przesylki values (" + generatedShipmentID + ", " 
-                    + "'" + parameterMap.get("imie_nazwisko_nadawcy")[0] + "', "
-                    + parameterMap.get("nazwa_kraju_nadawcy")[0] + ", "
-                    + "'" + parameterMap.get("kod_pocztowy_nadawcy")[0] + "', "
-                    + "'" + parameterMap.get("adres_nadawcy")[0] + "', "
-                    + "'" + parameterMap.get("imie_nazwisko_odbiorcy")[0] + "', "
-                    + parameterMap.get("nazwa_kraju_odbiorcy")[0] + ", "
-                    + "'" + parameterMap.get("kod_pocztowy_odbiorcy")[0] + "', "
-                    + "'" + parameterMap.get("adres_odbiorcy")[0] + "', "
-                    + "NOW())");
-            model.ConnectionSingleton.executeUpdate("insert into przekazy values(" + generatedShipmentID + ", "
-                    + parameterMap.get("kwota_przekazu")[0] + ")");
-            
-            xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
+            else
+            {
+                printFormErrors(xmlGenerator);
+            }
         }
     }
     
@@ -390,6 +419,23 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
     }
     
     /**
+     * Wyświetla na ekranie ID przesyłki.
+     * Metoda odpowiada za wyświetlenie na ekranie ID przesyłki. Formatowanie
+     * odbywa się za pomocą znaczników HTML.
+     * @param xmlGenerator Referencja do XMLGenerator dzięki, któremu 
+     * generowane są odpowiedzi dla klienta.
+     * @param generatedShipmentID Wygenerowane ID przesyłki
+     */
+    private void printShipmentID(XMLGenerator xmlGenerator, String generatedShipmentID)
+    {
+        xmlGenerator.printStartTag("font", "color", "black", "size", "16");
+        xmlGenerator.printStartTag("b", "");
+        xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
+        xmlGenerator.printEndTag();
+        xmlGenerator.printEndTag();
+    }
+    
+    /**
      * Zmienia priorytet przesyłki z Tak / Nie na 1 lub 0. 
      * @param parameterMap Parametry wprowadzone przez użytkownika w formularz.
      * @param formFieldName Nazwa pola w formularzu, którego wartość zostaje wyciągnięta z 
@@ -405,5 +451,123 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
         {
             priorytet = "0";
         }
+    }
+    
+    /**
+     * Walidacja głównego formularza.
+     * Metoda sprawdza poprawność wprowadzonych w pola formularza danych dotyczących
+     * między innymi adresu nadawcy, odbiorcy, kodu pocztowego itp.
+     * Walidacja każdego z pól odbywa się za pomocą wyrażenia regularnego. 
+     * W przypadku błędnie wprowadzonych danych, błąd z danego pola
+     * zostaje zapisany do listy błędów.
+     * @param parameterMap Parametry przekazane przez użytkownika poprzez formularz.
+     */
+    private void validateMainForm(Map<String, String[]> parameterMap)
+    {
+        String senderNameSurname = parameterMap.get("imie_nazwisko_nadawcy")[0];
+        String senderPostCode = parameterMap.get("kod_pocztowy_nadawcy")[0];
+        String senderAddress = parameterMap.get("adres_nadawcy")[0];
+        String recipientNameSurname = parameterMap.get("imie_nazwisko_odbiorcy")[0];
+        String recipientPostCode = parameterMap.get("kod_pocztowy_odbiorcy")[0];
+        String recipientAddress = parameterMap.get("adres_odbiorcy")[0];
+        
+        if (!senderNameSurname.matches("[A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30} [A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}"))
+        {
+            formErrorsList.add("Proszę podać poprawne imię i nazwisko nadawcy");
+        }
+        
+        if (!senderPostCode.matches("\\d{2}-\\d{3}"))
+        {
+            formErrorsList.add("Proszę podać poprawny kod pocztowy nadawcy");
+        }
+        
+        if (!senderAddress.matches("[1-9a-z]{0,1}[ A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś]{2,34} ([0-9]{1,3}[/][0-9]{1,3}|[0-9]{1,3}[a-z]{1}) [A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś ]{2,34}"))
+        {
+            formErrorsList.add("Proszę podać poprawny adres nadawcy");
+        }
+        
+        if (!recipientNameSurname.matches("[A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30} [A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}"))
+        {
+            formErrorsList.add("Proszę podać poprawne imię i nazwisko odbiorcy");
+        }
+        
+        if (!recipientPostCode.matches("\\d{2}-\\d{3}"))
+        {
+            formErrorsList.add("Proszę podać poprawny kod pocztowy odbiorcy");
+        }
+        
+        if (!recipientAddress.matches("[1-9a-z]{0,1}[ A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś]{2,34} ([0-9]{1,3}[/][0-9]{1,3}|[0-9]{1,3}[a-z]{1}) [A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś ]{2,34}"))
+        {
+            formErrorsList.add("Proszę podać poprawny adres odbiorcy");
+        }
+    }
+        
+    /**
+     * Walidacja pola z masą listu.
+     * Metoda sprawdza poprawność wprowadzonej w pole formularza masy listu.
+     * Walidacja odbywa się za pomocą wyrażenia regularnego. W przypadku błędnej masy,
+     * błąd ten zostaje zapisany do listy błędów.
+     * @param parameterMap Parametry przekazane przez użytkownika poprzez formularz.
+     */
+    private void validateLetterMass(Map<String, String[]> parameterMap)
+    {
+        String letterMass = parameterMap.get("masa_listu")[0];
+        if (!letterMass.matches("[0-9]{1,4}"))
+        {
+            formErrorsList.add("Proszę podać poprawną masę listu");
+        }
+    }
+    
+    /**
+     * Walidacja pola z masą paczki.
+     * Metoda sprawdza poprawność wprowadzonej w pole formularza masy paczki.
+     * Walidacja odbywa się za pomocą wyrażenia regularnego. W przypadku błędnej masy,
+     * błąd ten zostaje zapisany do listy błędów.
+     * @param parameterMap Parametry przekazane przez użytkownika poprzez formularz.
+     */
+    private void validatePackageMass(Map<String, String[]> parameterMap)
+    {
+        String packageMass = parameterMap.get("masa_paczki")[0];
+        if (!packageMass.matches("[0-9]{1,4}"))
+        {
+            formErrorsList.add("Proszę podać poprawną masę paczki");
+        }
+    }
+    
+    /**
+     * Walidacja pola z kwotą przekazu.
+     * Metoda sprawdza poprawność wprowadzonej w pole formularza kwoty przekazu.
+     * Walidacja odbywa się za pomocą wyrażenia regularnego. W przypadku błędnej kwoty,
+     * błąd ten zostaje zapisany do listy błędów.
+     * @param parameterMap Parametry przekazane przez użytkownika poprzez formularz.
+     */
+    private void validateOrderAmount(Map<String, String[]> parameterMap)
+    {
+        String orderAmount = parameterMap.get("kwota_przekazu")[0];
+        if (!orderAmount.matches("[0-9]{1,5}[.]{0,1}[0-9]{2}"))
+        {
+            formErrorsList.add("Proszę podać poprawną kwotę przekazu");
+        }
+    }
+    
+    /**
+     * Wyświetla na ekranie błędy, które pojawiły sie w formularzu.
+     * Metoda wyświetla na ekranie błędy, które zostały spowodowane błędnym wypełnieniem
+     * pól formularza. Po ich wyświetleniu lista zawierajaca błędy zostaje wyczyszczona.
+     * Błędy przechowywane są w formErrorsList (lista Stringów).
+     * @param xmlGenerator Referencja do XMLGenerator dzięki, któremu 
+     * generowane są odpowiedzi dla klienta.
+     */
+    private void printFormErrors(XMLGenerator xmlGenerator)
+    {
+        for (String i : this.formErrorsList)
+        {
+            xmlGenerator.printStartTag("font", "color", "red");
+            xmlGenerator.printStartTag("b", "");
+            xmlGenerator.println("* " +i + " <br>");
+            xmlGenerator.printEndTag();
+            xmlGenerator.printEndTag();
+        }
+        this.formErrorsList.clear();
     }
 }
