@@ -22,7 +22,8 @@ public class Servlet extends HttpServlet {
         new model.applications.Logowanie(),
         new model.applications.stanPrzesylki(),
         new model.applications.DefiniowaniePrzesylek(),
-        new model.applications.ZmianaStanu()};
+        new model.applications.ZmianaStanu(),
+        new model.applications.EdycjaTabelSlownikowych()};
 
     /**
 * Tworzy połączenie z bazą danych. Jeśli napotkano wyjatek
