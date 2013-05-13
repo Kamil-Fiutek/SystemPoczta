@@ -69,19 +69,9 @@ public class HTMLGenerator {
                 "type", "text/css",
                 "href", "../style.css");
         
-        xmlGenerator.printEmptyElement("link",
-                "rel", "stylesheet",
-                "type", "text/css",
-                "href", "../js/validator/style/walidacja.formularza.przesylek.css");
-        
         xmlGenerator.printStartTag("script",
                 "type", "text/javascript",
                 "src", "../js/jquery-2.0.0.min.js");
-        xmlGenerator.printEndTag();
-        
-        xmlGenerator.printStartTag("script", 
-                "type", "text/javascript",
-                "src", "../js/validator/jquery.validate.js");
         xmlGenerator.printEndTag();
         
         xmlGenerator.printElement("title", title);
