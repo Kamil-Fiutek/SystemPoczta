@@ -167,17 +167,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface{
      * generowany jest formularz.
      */
     private void generateForm(XMLGenerator xmlGenerator)
-    {
-        xmlGenerator.printStartTag("script",
-                "type", "text/javascript",
-                "src", "../js/pages/formularz.js");
-        xmlGenerator.printEndTag();
-       
-        xmlGenerator.printStartTag("script", 
-                "type", "text/javascript",
-                "src", "../js/pages/walidacja.formularza.przesylek2.js");
-        xmlGenerator.printEndTag();
-        
+    {        
         xmlGenerator.printStartTag("form", "action","","method","POST", "id", "form1");
         
         xmlGenerator.printStartTag("div", "id", /*"tab tabActive"*/ "mainForm");
