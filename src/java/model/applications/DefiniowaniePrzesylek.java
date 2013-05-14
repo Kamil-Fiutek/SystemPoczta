@@ -4,6 +4,7 @@
  */
 package model.applications;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,13 +27,31 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
     private ArrayList<String> formErrorsList;
     private String charactersUsedToGenerateShipmentID;
     private String priorytet;
-    private String imie_nazwisko_nadawcy = null;
-    private Boolean udane = false;
+    private String imie_nazwisko_nadawcy;
+    private String adres_nadawcy;
+    private String kod_pocztowy_nadawcy;
+    private String imie_nazwisko_odbiorcy;
+    private String adres_odbiorcy;
+    private String kod_pocztowy_odbiorcy;
+    private String masa_listu;
+    private String masa_paczki;
+    private String kwota_przekazu;
+    private Boolean udane;
 
     public DefiniowaniePrzesylek() {
         this.resultSet = null;
         this.formErrorsList = new ArrayList<String>();
         this.charactersUsedToGenerateShipmentID = "1234567890";
+        this.priorytet = null;
+        this.imie_nazwisko_nadawcy = null;
+        this.adres_nadawcy = null;
+        this.kod_pocztowy_nadawcy = null;
+        this.imie_nazwisko_odbiorcy = null;
+        this.adres_odbiorcy = null;
+        this.kod_pocztowy_odbiorcy = null;
+        this.masa_listu = null;
+        this.masa_paczki = null;
+        this.kwota_przekazu = null;
     }
 
     @Override
@@ -44,10 +63,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
     public void printApplication(Employee employee, HttpServletResponse httpServletResponse, XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession) {
 
         udane = false;
-        if (parameterMap.get("imie_nazwisko_nadawcy") != null) {
-            imie_nazwisko_nadawcy = parameterMap.get("imie_nazwisko_nadawcy")[0];
-        }
-
+        holdEnteredDataInForm(parameterMap);
+        
         if (parameterMap.get("wyslij_list") != null) {
             validateMainForm(parameterMap);
             validateLetterMass(parameterMap);
@@ -76,7 +93,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
                 model.ConnectionSingleton.executeUpdate("insert into listy values(" + generatedShipmentID + ", "
                         + priorytet + ", " + parameterMap.get("masa_listu")[0] + ")");
 
-                printShipmentID(xmlGenerator, generatedShipmentID);
+                printShipmentID(xmlGenerator, parameterMap, generatedShipmentID);
             } else {
                 printFormErrors(xmlGenerator);
             }
@@ -109,7 +126,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
                         + priorytet + ", " + parameterMap.get("masa_paczki")[0] + ", "
                         + parameterMap.get("paczka_gabaryt")[0] + ")");
 
-                printShipmentID(xmlGenerator, generatedShipmentID);
+                //printShipmentID(xmlGenerator, generatedShipmentID);
             } else {
                 printFormErrors(xmlGenerator);
             }
@@ -140,7 +157,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
                 model.ConnectionSingleton.executeUpdate("insert into przekazy values(" + generatedShipmentID + ", "
                         + parameterMap.get("kwota_przekazu")[0] + ")");
 
-                printShipmentID(xmlGenerator, generatedShipmentID);
+                //printShipmentID(xmlGenerator, generatedShipmentID);
             } else {
                 printFormErrors(xmlGenerator);
             }
@@ -148,8 +165,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         
         if(!udane){
             generateForm(xmlGenerator);
-        }
-        
+        }   
     }
 
     /**
@@ -173,7 +189,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("input", "name", "imie_nazwisko_nadawcy",
                 "id", "imie_nazwisko_nadawcy",
-                "type", "text");
+                "type", "text",
+                "value", imie_nazwisko_nadawcy);
         xmlGenerator.printEmptyElement("br");
 
         xmlGenerator.printStartTag("label", "id", "nadawca_adres");
@@ -181,7 +198,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("input", "name", "adres_nadawcy",
                 "id", "adres_nadawcy",
-                "type", "text");
+                "type", "text",
+                "value", adres_nadawcy);
         xmlGenerator.printEmptyElement("br");
 
         xmlGenerator.printStartTag("label", "id", "nadawca_kod_pocztowy");
@@ -190,7 +208,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         xmlGenerator.printEmptyElement("input", "name", "kod_pocztowy_nadawcy",
                 "id", "kod_pocztowy_nadawcy",
                 "type", "text",
-                "value", (imie_nazwisko_nadawcy==null?"":imie_nazwisko_nadawcy));
+                "value", kod_pocztowy_nadawcy);
         xmlGenerator.printEmptyElement("br");
 
         xmlGenerator.printStartTag("label", "id", "nadawca_nazwa_kraju");
@@ -206,7 +224,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("input", "name", "imie_nazwisko_odbiorcy",
                 "id", "imie_nazwisko_odbiorcy",
-                "type", "text");
+                "type", "text",
+                "value", imie_nazwisko_odbiorcy);
         xmlGenerator.printEmptyElement("br");
 
         xmlGenerator.printStartTag("label", "id", "odbiorca_adres");
@@ -214,7 +233,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("input", "name", "adres_odbiorcy",
                 "id", "adres_odbiorcy",
-                "type", "text");
+                "type", "text",
+                "value", adres_odbiorcy);
         xmlGenerator.printEmptyElement("br");
 
         xmlGenerator.printStartTag("label", "id", "odbiorca_kod_pocztowy");
@@ -222,7 +242,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("input", "name", "kod_pocztowy_odbiorcy",
                 "id", "kod_pocztowy_odbiorcy",
-                "type", "text");
+                "type", "text",
+                "value", kod_pocztowy_odbiorcy);
         xmlGenerator.printEmptyElement("br");
 
         xmlGenerator.printStartTag("label", "id", "odbiorca_nazwa_kraju");
@@ -262,7 +283,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("input", "name", "masa_listu",
                 "id", "masa_listu",
-                "type", "text");
+                "type", "text",
+                "value", masa_listu);
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEmptyElement("input", "type", "submit", "name", "wyslij_list", "value", "Wyślij list");
         xmlGenerator.printEmptyElement("br");
@@ -294,7 +316,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("input", "name", "masa_paczki",
                 "id", "masa_paczki",
-                "type", "text");
+                "type", "text",
+                "value", masa_paczki);
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEmptyElement("input", "name", "wyslij_paczke", "type", "submit", "value", "Wyślij paczkę");
         xmlGenerator.printEmptyElement("br");
@@ -306,13 +329,107 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("input", "name", "kwota_przekazu",
                 "id", "kwota_przekazu",
-                "type", "text");
+                "type", "text",
+                "value", kwota_przekazu);
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEmptyElement("input", "name", "wyslij_przekaz", "type", "submit", "value", "Wyślij przekaz");
         xmlGenerator.printEmptyElement("br");
         xmlGenerator.printEndTag();     //div class="tab tabPrzekaz"
 
         xmlGenerator.printEndTag();     // form
+    }
+    
+    private void holdEnteredDataInForm(Map<String, String[]> parameterMap)
+    {
+        if (parameterMap.get("imie_nazwisko_nadawcy") != null) 
+        {
+            imie_nazwisko_nadawcy = parameterMap.get("imie_nazwisko_nadawcy")[0];
+        }
+        else
+        {
+            imie_nazwisko_nadawcy = "";
+        }
+        
+        if (parameterMap.get("adres_nadawcy") != null)
+        {
+            adres_nadawcy = parameterMap.get("adres_nadawcy")[0];
+        }
+        else
+        {
+            adres_nadawcy = "";
+        }
+        
+        if(parameterMap.get("kod_pocztowy_nadawcy") != null)
+        {
+            kod_pocztowy_nadawcy = parameterMap.get("kod_pocztowy_nadawcy")[0];
+        }
+        else
+        {
+            kod_pocztowy_nadawcy = "";
+        }
+        
+        if(parameterMap.get("imie_nazwisko_odbiorcy") != null)
+        {
+            imie_nazwisko_odbiorcy = parameterMap.get("imie_nazwisko_odbiorcy")[0];
+        }
+        else
+        {
+            imie_nazwisko_odbiorcy = "";
+        }   
+             
+        if(parameterMap.get("adres_odbiorcy") != null)
+        {
+            adres_odbiorcy = parameterMap.get("adres_odbiorcy")[0];
+        }
+        else
+        {
+            adres_odbiorcy = "";
+        } 
+                
+        if(parameterMap.get("kod_pocztowy_odbiorcy") != null)
+        {
+            kod_pocztowy_odbiorcy = parameterMap.get("kod_pocztowy_odbiorcy")[0];
+        }
+        else
+        {
+            kod_pocztowy_odbiorcy = "";
+        }
+        
+        if(parameterMap.get("kod_pocztowy_odbiorcy") != null)
+        {
+            kod_pocztowy_odbiorcy = parameterMap.get("kod_pocztowy_odbiorcy")[0];
+        }
+        else
+        {
+            kod_pocztowy_odbiorcy = "";
+        } 
+                
+        if(parameterMap.get("masa_listu") != null)
+        {
+            masa_listu = parameterMap.get("masa_listu")[0];
+        }
+        else
+        {
+            masa_listu = "";
+        } 
+                
+        if(parameterMap.get("masa_paczki") != null)
+        {
+            masa_paczki = parameterMap.get("masa_paczki")[0];
+        }
+        else
+        {
+            masa_paczki = "";
+        } 
+        
+        if(parameterMap.get("kwota_przekazu") != null)
+        {
+            kwota_przekazu = parameterMap.get("kwota_przekazu")[0];
+        }
+        else
+        {
+            kwota_przekazu = "";
+        } 
     }
 
     /**
@@ -351,7 +468,6 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      */
     private String generateShipmentID() {
         Random random = new Random();
-        udane=true;
         int length = this.charactersUsedToGenerateShipmentID.length();
         char text[] = new char[length];
         for (int i = 0; i < length; i++) {
@@ -397,12 +513,18 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      * są odpowiedzi dla klienta.
      * @param generatedShipmentID Wygenerowane ID przesyłki
      */
-    private void printShipmentID(XMLGenerator xmlGenerator, String generatedShipmentID) {
+    private void printShipmentID(XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, String generatedShipmentID) {
         xmlGenerator.printStartTag("font", "color", "black", "size", "16");
         xmlGenerator.printStartTag("b", "");
         xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
         xmlGenerator.printEndTag();
         xmlGenerator.printEndTag();
+        
+        xmlGenerator.println("<br><br>");
+        xmlGenerator.printStartTag("form", "action", "", "method", "POST");
+        xmlGenerator.printEmptyElement("input", "type", "submit", "value", "Wstecz", "name", "Wstecz");
+        xmlGenerator.printEndTag(); // form
+        udane = true;
     }
 
     /**
@@ -432,34 +554,34 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      */
     private void validateMainForm(Map<String, String[]> parameterMap) {
         String senderNameSurname = parameterMap.get("imie_nazwisko_nadawcy")[0];
-        String senderPostCode = parameterMap.get("kod_pocztowy_nadawcy")[0];
         String senderAddress = parameterMap.get("adres_nadawcy")[0];
+        String senderPostCode = parameterMap.get("kod_pocztowy_nadawcy")[0];
         String recipientNameSurname = parameterMap.get("imie_nazwisko_odbiorcy")[0];
-        String recipientPostCode = parameterMap.get("kod_pocztowy_odbiorcy")[0];
         String recipientAddress = parameterMap.get("adres_odbiorcy")[0];
+        String recipientPostCode = parameterMap.get("kod_pocztowy_odbiorcy")[0];
 
         if (!senderNameSurname.matches("[A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30} [A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}")) {
             formErrorsList.add("Proszę podać poprawne imię i nazwisko nadawcy");
         }
 
-        if (!senderPostCode.matches("\\d{2}-\\d{3}")) {
-            formErrorsList.add("Proszę podać poprawny kod pocztowy nadawcy");
-        }
-
         if (!senderAddress.matches("[1-9a-z]{0,1}[ A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś]{2,34} ([0-9]{1,3}[/][0-9]{1,3}|[0-9]{1,3}[a-z]{1}) [A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś ]{2,34}")) {
             formErrorsList.add("Proszę podać poprawny adres nadawcy");
+        }
+        
+        if (!senderPostCode.matches("\\d{2}-\\d{3}")) {
+            formErrorsList.add("Proszę podać poprawny kod pocztowy nadawcy");
         }
 
         if (!recipientNameSurname.matches("[A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30} [A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}")) {
             formErrorsList.add("Proszę podać poprawne imię i nazwisko odbiorcy");
         }
 
-        if (!recipientPostCode.matches("\\d{2}-\\d{3}")) {
-            formErrorsList.add("Proszę podać poprawny kod pocztowy odbiorcy");
-        }
-
         if (!recipientAddress.matches("[1-9a-z]{0,1}[ A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś]{2,34} ([0-9]{1,3}[/][0-9]{1,3}|[0-9]{1,3}[a-z]{1}) [A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś ]{2,34}")) {
             formErrorsList.add("Proszę podać poprawny adres odbiorcy");
+        }
+        
+        if (!recipientPostCode.matches("\\d{2}-\\d{3}")) {
+            formErrorsList.add("Proszę podać poprawny kod pocztowy odbiorcy");
         }
     }
 
