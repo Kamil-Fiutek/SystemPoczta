@@ -21,7 +21,8 @@ import view.XMLGenerator;
  *
  * @author Lukasz
  */
-public class DefiniowaniePrzesylek implements model.ApplicationInterface {
+public class DefiniowaniePrzesylek implements model.ApplicationInterface
+{
 
     private ResultSet resultSet;
     private ArrayList<String> formErrorsList;
@@ -36,9 +37,14 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
     private String masa_listu;
     private String masa_paczki;
     private String kwota_przekazu;
+    private String[] shipmentSummary = {"Imię i nazwisko nadawcy", "Adres nadawcy",
+        "Kod pocztowy nadawcy", "Nazwa kraju nadawcy",
+        "Imię i nazwisko odbiorcy", "Adres odbiorcy",
+        "Kod pocztowy odbiorcy", "Nazwa kraju odbiorcy"};
     private Boolean udane;
 
-    public DefiniowaniePrzesylek() {
+    public DefiniowaniePrzesylek()
+    {
         this.resultSet = null;
         this.formErrorsList = new ArrayList<String>();
         this.charactersUsedToGenerateShipmentID = "1234567890";
@@ -55,25 +61,33 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
     }
 
     @Override
-    public String getTitle(Employee employee) {
+    public String getTitle(Employee employee)
+    {
         return "Definiowanie przesyłek";
     }
 
     @Override
-    public void printApplication(Employee employee, HttpServletResponse httpServletResponse, XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession) {
+    public void printApplication(Employee employee, HttpServletResponse httpServletResponse, XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, HttpSession httpSession)
+    {
 
         udane = false;
         holdEnteredDataInForm(parameterMap);
-        
-        if (parameterMap.get("wyslij_list") != null) {
+        String[] rows = { this.imie_nazwisko_nadawcy, this.adres_nadawcy,
+            this.kod_pocztowy_nadawcy, this.imie_nazwisko_odbiorcy,
+            this.adres_odbiorcy, this.kod_pocztowy_odbiorcy};
+
+        if (parameterMap.get("wyslij_list") != null)
+        {
             validateMainForm(parameterMap);
             validateLetterMass(parameterMap);
-            if (formErrorsList.isEmpty() == true) {
+            if (formErrorsList.isEmpty() == true)
+            {
                 String generatedShipmentID = generateShipmentID();
                 resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
                         + "from przesylki where idPrzesylki = " + generatedShipmentID);
 
-                while (checkGeneratedShipmentID() == true) {
+                while (checkGeneratedShipmentID() == true)
+                {
                     generatedShipmentID = generateShipmentID();
                     resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
                             + "from przesylki where idPrzesylki = " + generatedShipmentID);
@@ -93,19 +107,25 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
                 model.ConnectionSingleton.executeUpdate("insert into listy values(" + generatedShipmentID + ", "
                         + priorytet + ", " + parameterMap.get("masa_listu")[0] + ")");
 
-                printShipmentID(xmlGenerator, parameterMap, generatedShipmentID);
-            } else {
+                generateShipmentSummary(xmlGenerator, shipmentSummary, rows, generatedShipmentID);
+            }
+            else
+            {
                 printFormErrors(xmlGenerator);
             }
-        } else if (parameterMap.get("wyslij_paczke") != null) {
+        }
+        else if (parameterMap.get("wyslij_paczke") != null)
+        {
             validateMainForm(parameterMap);
             validatePackageMass(parameterMap);
-            if (formErrorsList.isEmpty() == true) {
+            if (formErrorsList.isEmpty() == true)
+            {
                 String generatedShipmentID = generateShipmentID();
                 resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
                         + "from przesylki where idPrzesylki = " + generatedShipmentID);
 
-                while (checkGeneratedShipmentID() == true) {
+                while (checkGeneratedShipmentID() == true)
+                {
                     generatedShipmentID = generateShipmentID();
                     resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
                             + "from przesylki where idPrzesylki = " + generatedShipmentID);
@@ -126,19 +146,25 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
                         + priorytet + ", " + parameterMap.get("masa_paczki")[0] + ", "
                         + parameterMap.get("paczka_gabaryt")[0] + ")");
 
-                //printShipmentID(xmlGenerator, generatedShipmentID);
-            } else {
+                generateShipmentSummary(xmlGenerator, shipmentSummary, rows, generatedShipmentID);
+            }
+            else
+            {
                 printFormErrors(xmlGenerator);
             }
-        } else if (parameterMap.get("wyslij_przekaz") != null) {
+        }
+        else if (parameterMap.get("wyslij_przekaz") != null)
+        {
             validateMainForm(parameterMap);
             validateOrderAmount(parameterMap);
-            if (formErrorsList.isEmpty() == true) {
+            if (formErrorsList.isEmpty() == true)
+            {
                 String generatedShipmentID = generateShipmentID();
                 resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
                         + "from przesylki where idPrzesylki = " + generatedShipmentID);
 
-                while (checkGeneratedShipmentID() == true) {
+                while (checkGeneratedShipmentID() == true)
+                {
                     generatedShipmentID = generateShipmentID();
                     resultSet = model.ConnectionSingleton.executeQuery("select count(*) "
                             + "from przesylki where idPrzesylki = " + generatedShipmentID);
@@ -157,15 +183,18 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
                 model.ConnectionSingleton.executeUpdate("insert into przekazy values(" + generatedShipmentID + ", "
                         + parameterMap.get("kwota_przekazu")[0] + ")");
 
-                //printShipmentID(xmlGenerator, generatedShipmentID);
-            } else {
+                generateShipmentSummary(xmlGenerator, shipmentSummary, rows, generatedShipmentID);
+            }
+            else
+            {
                 printFormErrors(xmlGenerator);
             }
         }
-        
-        if(!udane){
+
+        if (!udane)
+        {
             generateForm(xmlGenerator);
-        }   
+        }
     }
 
     /**
@@ -174,7 +203,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      * @param xmlGenerator Referencja do XMLGenerator dzięki, któremu generowany
      * jest formularz.
      */
-    private void generateForm(XMLGenerator xmlGenerator) {
+    private void generateForm(XMLGenerator xmlGenerator)
+    {
         xmlGenerator.printStartTag("script",
                 "type", "text/javascript",
                 "src", "../js/pages/formularz.js");
@@ -194,7 +224,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         xmlGenerator.printEmptyElement("br");
 
         xmlGenerator.printStartTag("label", "id", "nadawca_adres");
-        xmlGenerator.println("Adres nadawcy - ulica oraz miasto (np. ul. Śliska 5a Szczecin):");
+        xmlGenerator.println("Adres nadawcy - ulica oraz miasto (np. Lewa 5a Szczecin):");
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("input", "name", "adres_nadawcy",
                 "id", "adres_nadawcy",
@@ -229,7 +259,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         xmlGenerator.printEmptyElement("br");
 
         xmlGenerator.printStartTag("label", "id", "odbiorca_adres");
-        xmlGenerator.println("Adres odbiorcy - ulica oraz miasto (np. ul. Śliska 5a Szczecin):");
+        xmlGenerator.println("Adres odbiorcy - ulica oraz miasto (np. Lewa 5a Szczecin):");
         xmlGenerator.printEndTag();
         xmlGenerator.printEmptyElement("input", "name", "adres_odbiorcy",
                 "id", "adres_odbiorcy",
@@ -338,10 +368,10 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
 
         xmlGenerator.printEndTag();     // form
     }
-    
+
     private void holdEnteredDataInForm(Map<String, String[]> parameterMap)
     {
-        if (parameterMap.get("imie_nazwisko_nadawcy") != null) 
+        if (parameterMap.get("imie_nazwisko_nadawcy") != null)
         {
             imie_nazwisko_nadawcy = parameterMap.get("imie_nazwisko_nadawcy")[0];
         }
@@ -349,7 +379,7 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         {
             imie_nazwisko_nadawcy = "";
         }
-        
+
         if (parameterMap.get("adres_nadawcy") != null)
         {
             adres_nadawcy = parameterMap.get("adres_nadawcy")[0];
@@ -358,8 +388,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         {
             adres_nadawcy = "";
         }
-        
-        if(parameterMap.get("kod_pocztowy_nadawcy") != null)
+
+        if (parameterMap.get("kod_pocztowy_nadawcy") != null)
         {
             kod_pocztowy_nadawcy = parameterMap.get("kod_pocztowy_nadawcy")[0];
         }
@@ -367,26 +397,26 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         {
             kod_pocztowy_nadawcy = "";
         }
-        
-        if(parameterMap.get("imie_nazwisko_odbiorcy") != null)
+
+        if (parameterMap.get("imie_nazwisko_odbiorcy") != null)
         {
             imie_nazwisko_odbiorcy = parameterMap.get("imie_nazwisko_odbiorcy")[0];
         }
         else
         {
             imie_nazwisko_odbiorcy = "";
-        }   
-             
-        if(parameterMap.get("adres_odbiorcy") != null)
+        }
+
+        if (parameterMap.get("adres_odbiorcy") != null)
         {
             adres_odbiorcy = parameterMap.get("adres_odbiorcy")[0];
         }
         else
         {
             adres_odbiorcy = "";
-        } 
-                
-        if(parameterMap.get("kod_pocztowy_odbiorcy") != null)
+        }
+
+        if (parameterMap.get("kod_pocztowy_odbiorcy") != null)
         {
             kod_pocztowy_odbiorcy = parameterMap.get("kod_pocztowy_odbiorcy")[0];
         }
@@ -394,42 +424,42 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         {
             kod_pocztowy_odbiorcy = "";
         }
-        
-        if(parameterMap.get("kod_pocztowy_odbiorcy") != null)
+
+        if (parameterMap.get("kod_pocztowy_odbiorcy") != null)
         {
             kod_pocztowy_odbiorcy = parameterMap.get("kod_pocztowy_odbiorcy")[0];
         }
         else
         {
             kod_pocztowy_odbiorcy = "";
-        } 
-                
-        if(parameterMap.get("masa_listu") != null)
+        }
+
+        if (parameterMap.get("masa_listu") != null)
         {
             masa_listu = parameterMap.get("masa_listu")[0];
         }
         else
         {
             masa_listu = "";
-        } 
-                
-        if(parameterMap.get("masa_paczki") != null)
+        }
+
+        if (parameterMap.get("masa_paczki") != null)
         {
             masa_paczki = parameterMap.get("masa_paczki")[0];
         }
         else
         {
             masa_paczki = "";
-        } 
-        
-        if(parameterMap.get("kwota_przekazu") != null)
+        }
+
+        if (parameterMap.get("kwota_przekazu") != null)
         {
             kwota_przekazu = parameterMap.get("kwota_przekazu")[0];
         }
         else
         {
             kwota_przekazu = "";
-        } 
+        }
     }
 
     /**
@@ -440,22 +470,30 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      * są odpowiedzi dla klienta.
      * @param fieldName Nazwa listy rozwijanej
      */
-    private void printResultSetContent(XMLGenerator xmlGenerator, String fieldName) {
+    private void printResultSetContent(XMLGenerator xmlGenerator, String fieldName)
+    {
         xmlGenerator.printStartTag("select", "name", fieldName);
-        try {
-            while (resultSet.next() == true) {
+        try
+        {
+            while (resultSet.next() == true)
+            {
                 xmlGenerator.printStartTag("option", "value", String.valueOf(resultSet.getObject(1)));
                 xmlGenerator.println((String) resultSet.getObject(2));
                 xmlGenerator.printEndTag(); // zakonczenie znacznika option
             }
-        } catch (SQLException ex) {
+        }
+        catch (SQLException ex)
+        {
             Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         xmlGenerator.printEndTag(); // zakonczenie znacznika select
-        try {
+        try
+        {
             resultSet.close();
-        } catch (SQLException ex) {
+        }
+        catch (SQLException ex)
+        {
             Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -466,14 +504,19 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      *
      * @return Wygenerowane ID przesyłki w postaci String'a.
      */
-    private String generateShipmentID() {
+    private String generateShipmentID()
+    {
         Random random = new Random();
         int length = this.charactersUsedToGenerateShipmentID.length();
         char text[] = new char[length];
-        for (int i = 0; i < length; i++) {
-            if (i == 0) {
+        for (int i = 0; i < length; i++)
+        {
+            if (i == 0)
+            {
                 text[i] = this.charactersUsedToGenerateShipmentID.charAt(random.nextInt(length - 1));
-            } else {
+            }
+            else
+            {
                 text[i] = this.charactersUsedToGenerateShipmentID.charAt(random.nextInt(length));
             }
         }
@@ -490,16 +533,21 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      * @return true, gdy w bazie istnieje rekord o wygenerowanym ID. false, gdy
      * w bazie nie istnieje rekord o wygenerowanym ID.
      */
-    private boolean checkGeneratedShipmentID() {
+    private boolean checkGeneratedShipmentID()
+    {
         int rowCount = 0;
-        try {
+        try
+        {
             resultSet.next();
             rowCount = resultSet.getInt(1);
-        } catch (SQLException ex) {
+        }
+        catch (SQLException ex)
+        {
             Logger.getLogger(DefiniowaniePrzesylek.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        if (rowCount > 0) {
+        if (rowCount > 0)
+        {
             return true;
         }
         return false;
@@ -513,13 +561,14 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      * są odpowiedzi dla klienta.
      * @param generatedShipmentID Wygenerowane ID przesyłki
      */
-    private void printShipmentID(XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, String generatedShipmentID) {
+    private void printShipmentID(XMLGenerator xmlGenerator, Map<String, String[]> parameterMap, String generatedShipmentID)
+    {
         xmlGenerator.printStartTag("font", "color", "black", "size", "16");
         xmlGenerator.printStartTag("b", "");
         xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
         xmlGenerator.printEndTag();
         xmlGenerator.printEndTag();
-        
+
         xmlGenerator.println("<br><br>");
         xmlGenerator.printStartTag("form", "action", "", "method", "POST");
         xmlGenerator.printEmptyElement("input", "type", "submit", "value", "Wstecz", "name", "Wstecz");
@@ -534,10 +583,14 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      * @param formFieldName Nazwa pola w formularzu, którego wartość zostaje
      * wyciągnięta z parameterMap.
      */
-    private void changeShipmentPriority(Map<String, String[]> parameterMap, String formFieldName) {
-        if (parameterMap.get(formFieldName)[0].equals("Tak")) {
+    private void changeShipmentPriority(Map<String, String[]> parameterMap, String formFieldName)
+    {
+        if (parameterMap.get(formFieldName)[0].equals("Tak"))
+        {
             priorytet = "1";
-        } else {
+        }
+        else
+        {
             priorytet = "0";
         }
     }
@@ -552,7 +605,8 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      * @param parameterMap Parametry przekazane przez użytkownika poprzez
      * formularz.
      */
-    private void validateMainForm(Map<String, String[]> parameterMap) {
+    private void validateMainForm(Map<String, String[]> parameterMap)
+    {
         String senderNameSurname = parameterMap.get("imie_nazwisko_nadawcy")[0];
         String senderAddress = parameterMap.get("adres_nadawcy")[0];
         String senderPostCode = parameterMap.get("kod_pocztowy_nadawcy")[0];
@@ -560,27 +614,45 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
         String recipientAddress = parameterMap.get("adres_odbiorcy")[0];
         String recipientPostCode = parameterMap.get("kod_pocztowy_odbiorcy")[0];
 
-        if (!senderNameSurname.matches("[A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30} [A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}")) {
-            formErrorsList.add("Proszę podać poprawne imię i nazwisko nadawcy");
+        if (!senderNameSurname.matches("([A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}[ ][A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}|[a-zżźćńółęąś]{2,30}[ ][a-zżźćńółęąś]{2,30})"))
+        {
+            if (!senderNameSurname.matches("([A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}[ ][A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}[-][A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,15}|[A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,29}[ ][A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,29}[ ][-][ ][A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,15})"))
+            {
+                if (!senderNameSurname.matches("([a-zżźćńółęąś]{2,30}[ ][a-zżźćńółęąś]{2,30}[-][a-zżźćńółęąś]{2,18}|[a-zżźćńółęąś]{2,30}[ ][a-zżźćńółęąś]{2,30}[ ][-][ ][a-zżźćńółęąś]{2,16})"))
+                {
+                    formErrorsList.add("Proszę podać poprawne imię i nazwisko nadawcy");
+                }
+            }
         }
 
-        if (!senderAddress.matches("[1-9a-z]{0,1}[ A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś]{2,34} ([0-9]{1,3}[/][0-9]{1,3}|[0-9]{1,3}[a-z]{1}) [A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś ]{2,34}")) {
+        if (!senderAddress.matches("[1-9a-z]{0,1}[ A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś]{2,34}[ ]([0-9]{1,3}[/][0-9]{1,3}|[0-9]{1,3}[a-z]{0,1})[ ][A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś ]{2,34}"))
+        {
             formErrorsList.add("Proszę podać poprawny adres nadawcy");
         }
-        
-        if (!senderPostCode.matches("\\d{2}-\\d{3}")) {
+
+        if (!senderPostCode.matches("\\d{2}[-]{0,1}\\d{3}"))
+        {
             formErrorsList.add("Proszę podać poprawny kod pocztowy nadawcy");
         }
 
-        if (!recipientNameSurname.matches("[A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30} [A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}")) {
-            formErrorsList.add("Proszę podać poprawne imię i nazwisko odbiorcy");
+        if (!recipientNameSurname.matches("([A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}[ ][A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}|[a-zżźćńółęąś]{2,30}[ ][a-zżźćńółęąś]{2,30})"))
+        {
+            if (!recipientNameSurname.matches("([A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}[ ][A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,30}[-][A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,15}|[A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,29}[ ][A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,29}[ ][-][ ][A-ZŻŹĆŃÓŁĘĄŚ]{1}[a-zżźćńółęąś]{2,15})"))
+            {
+                if (!recipientNameSurname.matches("([a-zżźćńółęąś]{2,30}[ ][a-zżźćńółęąś]{2,30}[-][a-zżźćńółęąś]{2,18}|[a-zżźćńółęąś]{2,30}[ ][a-zżźćńółęąś]{2,30}[ ][-][ ][a-zżźćńółęąś]{2,16})"))
+                {
+                    formErrorsList.add("Proszę podać poprawne imię i nazwisko odbiorcy");
+                }
+            }
         }
 
-        if (!recipientAddress.matches("[1-9a-z]{0,1}[ A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś]{2,34} ([0-9]{1,3}[/][0-9]{1,3}|[0-9]{1,3}[a-z]{1}) [A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś ]{2,34}")) {
+        if (!recipientAddress.matches("[1-9a-z]{0,1}[ A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś]{2,34}[ ]([0-9]{1,3}[/][0-9]{1,3}|[0-9]{1,3}[a-z]{0,1})[ ][A-ZŻŹĆŃÓŁĘĄŚa-zżźćńółęąś ]{2,34}"))
+        {
             formErrorsList.add("Proszę podać poprawny adres odbiorcy");
         }
-        
-        if (!recipientPostCode.matches("\\d{2}-\\d{3}")) {
+
+        if (!recipientPostCode.matches("\\d{2}[-]{0,1}\\d{3}"))
+        {
             formErrorsList.add("Proszę podać poprawny kod pocztowy odbiorcy");
         }
     }
@@ -594,9 +666,11 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      * @param parameterMap Parametry przekazane przez użytkownika poprzez
      * formularz.
      */
-    private void validateLetterMass(Map<String, String[]> parameterMap) {
+    private void validateLetterMass(Map<String, String[]> parameterMap)
+    {
         String letterMass = parameterMap.get("masa_listu")[0];
-        if (!letterMass.matches("[0-9]{1,4}")) {
+        if (!letterMass.matches("[0-9]+"))
+        {
             formErrorsList.add("Proszę podać poprawną masę listu");
         }
     }
@@ -610,9 +684,11 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      * @param parameterMap Parametry przekazane przez użytkownika poprzez
      * formularz.
      */
-    private void validatePackageMass(Map<String, String[]> parameterMap) {
+    private void validatePackageMass(Map<String, String[]> parameterMap)
+    {
         String packageMass = parameterMap.get("masa_paczki")[0];
-        if (!packageMass.matches("[0-9]{1,4}")) {
+        if (!packageMass.matches("[0-9]+"))
+        {
             formErrorsList.add("Proszę podać poprawną masę paczki");
         }
     }
@@ -626,9 +702,11 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      * @param parameterMap Parametry przekazane przez użytkownika poprzez
      * formularz.
      */
-    private void validateOrderAmount(Map<String, String[]> parameterMap) {
+    private void validateOrderAmount(Map<String, String[]> parameterMap)
+    {
         String orderAmount = parameterMap.get("kwota_przekazu")[0];
-        if (!orderAmount.matches("[0-9]{1,5}[.]{0,1}[0-9]{2}")) {
+        if (!orderAmount.matches("([0-9]{1,10}|[0-9]{1,10}[.]{1}[0-9]{2})"))
+        {
             formErrorsList.add("Proszę podać poprawną kwotę przekazu");
         }
     }
@@ -643,8 +721,10 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
      * @param xmlGenerator Referencja do XMLGenerator dzięki, któremu generowane
      * są odpowiedzi dla klienta.
      */
-    private void printFormErrors(XMLGenerator xmlGenerator) {
-        for (String i : this.formErrorsList) {
+    private void printFormErrors(XMLGenerator xmlGenerator)
+    {
+        for (String i : this.formErrorsList)
+        {
             xmlGenerator.printStartTag("font", "color", "red");
             xmlGenerator.printStartTag("b", "");
             xmlGenerator.println("* " + i + " <br>");
@@ -652,5 +732,36 @@ public class DefiniowaniePrzesylek implements model.ApplicationInterface {
             xmlGenerator.printEndTag();
         }
         this.formErrorsList.clear();
+    }
+
+    private void generateShipmentSummary(XMLGenerator xmlGenerator, String[] rowsDescription, String[] rows, String generatedShipmentID)
+    {
+//        xmlGenerator.printStartTag("table", "");
+//
+//        for (int i = 0; i < rows.length; i++)
+//        {
+//            xmlGenerator.printStartTag("tr", "");
+//            xmlGenerator.printStartTag("td", "");
+//            xmlGenerator.printStartTag("font", "color", "black", "size", "5");
+//            xmlGenerator.printStartTag("b", "");
+//            xmlGenerator.println(rowsDescription[i] + ": " + rows[i]);
+//            xmlGenerator.printEndTag();
+//            xmlGenerator.printEndTag();
+//            xmlGenerator.printEndTag();
+//            xmlGenerator.printEndTag();
+//        }
+//
+//        xmlGenerator.printEndTag();
+//        xmlGenerator.printStartTag("font", "color", "black", "size", "5");
+//        xmlGenerator.printStartTag("b", "");
+//        xmlGenerator.println("Kod przesyłki: " + generatedShipmentID);
+//        xmlGenerator.printEndTag();
+//        xmlGenerator.printEndTag();
+//
+//        xmlGenerator.println("<br><br>");
+//        xmlGenerator.printStartTag("form", "action", "", "method", "POST");
+//        xmlGenerator.printEmptyElement("input", "type", "submit", "value", "Wstecz", "name", "Wstecz");
+//        xmlGenerator.printEndTag(); // form
+        udane = true;
     }
 }
