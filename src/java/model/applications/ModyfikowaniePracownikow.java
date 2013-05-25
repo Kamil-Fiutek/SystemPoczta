@@ -1,4 +1,3 @@
-
 package model.applications;
 
 import java.util.Map;
