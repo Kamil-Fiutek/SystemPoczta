@@ -23,7 +23,14 @@ public class Servlet extends HttpServlet {
         new model.applications.stanPrzesylki(),
         new model.applications.DefiniowaniePrzesylek(),
         new model.applications.ZmianaStanu(),
-        new model.applications.EdycjaTabelSlownikowych()};
+        new model.applications.EdycjaTabelSlownikowych()
+        new model.applications.DodawaniePracowników(),
+        new model.applications.ModyfikowaniePracowników(),
+        new model.applications.UsuwaniePracowników(),
+        new model.applications.DodawaniePlacowek(),
+        new model.applications.ModyfikowaniePlacowek(),
+        new model.applications.UsuwaniePlacowek()
+        };
 
     /**
 * Tworzy połączenie z bazą danych. Jeśli napotkano wyjatek
